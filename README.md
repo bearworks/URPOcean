@@ -1,3 +1,3 @@
 # URPOcean
-Ocean,UNITY,Universal Render Pipeline,Mobile,URP
+Requrire Unity 2019.3 or later
 ![](URPOcean.png)
