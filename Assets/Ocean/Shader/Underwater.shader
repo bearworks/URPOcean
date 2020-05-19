@@ -176,7 +176,7 @@
 
 				half4 color = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uv + distort);
 
-				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv), _ZBufferParams);
+				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv + distort), _ZBufferParams);
 
 				return lerp(_BaseColor, color, saturate((1 - depth) * _DepthFade));
 			}

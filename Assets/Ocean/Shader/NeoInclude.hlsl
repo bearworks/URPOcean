@@ -429,7 +429,9 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	// base, depth & reflection colors
 	half4 baseColor = _BaseColor;
 
-	float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, i.screenPos.xy / i.screenPos.w), _ZBufferParams);
+	half2 refrCoord = (i.screenPos.xy) / i.screenPos.w + worldNormal.xz * LERPREFL;
+
+	float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, refrCoord), _ZBufferParams);
 	depth = depth - i.screenPos.w + 0;
 
 	half4 shallowColor = _ShallowColor;
@@ -468,15 +470,10 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor += spec * lerp(_SpecularColor * fade, 0.05, 0) / max(alpha, 0.1);
 
-#if !defined (XJ4_ALPHABLEND_ON)
-	half2 refrCoord = (i.screenPos.xy) / i.screenPos.w + worldNormal.xz * LERPREFL;
-
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
 	baseColor = lerp(refractions, baseColor, alpha);
-#else
-	baseColor.a = alpha;
-#endif
+
 	return half4(clamp(baseColor.rgb, 0, 48),saturate(baseColor.a));
 }
 
