@@ -19,7 +19,7 @@ Properties {
 	[HideInInspector]_WaveTex("WaveTex", 2D) = "black" {}
 	[HideInInspector]_WaveCoord("WaveCoord", Vector) = (0, 0, 0, 0)
 
-	[KeywordEnum(OFF, ON)] _PIXELFORCES("Pixel High Light", float) = 0
+	[KeywordEnum(OFF, ON)] _PIXELFORCES("Point High Light", float) = 0
 	[HideInInspector][KeywordEnum(OFF, ON)] _PROJECTED("Projected Mode", float) = 0
 } 
 
