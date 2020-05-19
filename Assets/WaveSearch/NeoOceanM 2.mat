@@ -13,7 +13,7 @@ Material:
     NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON NEOOCEAN_FOAM_ON NEOOCEAN_FOG_ON
     NEOOCEAN_GERSTNER_OFF NEOOCEAN_PHONG_OFF NEOOCEAN_PHONG_ON NEOOCEAN_PROJECTED_OFF
     NEOOCEAN_REFLECTION_ON NEOOCEAN_SPHERICALPG_OFF NEOOCEAN_TRAILSCREEN_OFF NEOOCEAN_TRAIL_OFF
-    _FOGFORCE_ON _PIXELFORCES_ON
+    _FOGFORCE_ON _PIXELFORCES_ON _PROJECTED_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -62,7 +62,7 @@ Material:
     - _Foam: {r: 2, g: 250, b: 2, a: 2}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
-    - _ShallowColor: {r: 0, g: 0.47286275, b: 0.63235295, a: 1}
+    - _ShallowColor: {r: 0.17822178, g: 0.3633341, b: 0.4245283, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}
     - _WaveOffset: {r: 0.5, g: -0.5, b: -0.5, a: 0.5}
 --- !u!1002 &2100001

@@ -43,6 +43,7 @@ MonoBehaviour:
   - {fileID: 5292759356372713131}
   - {fileID: 886303367019541046}
   - {fileID: -1277689303510336464}
+  - {fileID: 2194719718904591351}
 --- !u!114 &886303367019541046
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -86,6 +87,37 @@ MonoBehaviour:
     m_Value: 0.463
     min: 0
     max: 1
+--- !u!114 &2194719718904591351
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c09bae50a62cd44ba655721d66e765f, type: 3}
+  m_Name: SunShafts
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  resolution:
+    m_OverrideState: 1
+    m_Value: 1
+  screenBlendMode:
+    m_OverrideState: 1
+    m_Value: 1
+  radialBlurIterations:
+    m_OverrideState: 1
+    m_Value: 2
+    min: 0
+    max: 2
+  sunShaftBlurRadius:
+    m_OverrideState: 1
+    m_Value: 0.6
+  maxRadius:
+    m_OverrideState: 1
+    m_Value: 0.75
 --- !u!114 &3754019864058382945
 MonoBehaviour:
   m_ObjectHideFlags: 3

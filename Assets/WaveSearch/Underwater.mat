@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortMap:
-        m_Texture: {fileID: 2800000, guid: 6931df1e8488496489e07473d27b5609, type: 3}
+        m_Texture: {fileID: 2800000, guid: fa12e5373cbfc7b46b585767a7e61df7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0.01, y: 0.01}
     - _EmissionMap:
@@ -70,6 +70,7 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DepthFade: 0.95
     - _DistortMag: 0.01
     - _DstBlend: 0
     - _EnvironmentReflections: 1
