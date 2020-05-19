@@ -64,7 +64,7 @@ Material:
     - _BumpScale: 1
     - _CloudCull: 0
     - _CloudDensity: 1
-    - _CloudDither: 10
+    - _CloudDither: 5
     - _CloudLit: 0.05
     - _CloudNumber: 0.0252
     - _CloudSpeed: 1
