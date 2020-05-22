@@ -552,7 +552,7 @@ Shader "Skybox/ProceduralCloud" {
 							float4 c = GetCloudColor(-ray);
 							c.a *= smoothstep(0.001, 0.1, 1.0 - yy);
 
-							col = lerp(col, pow(c, 0.7), c.a);
+							col = lerp(col, c, c.a);
 #endif
 							return half4(col,1.0);
 
