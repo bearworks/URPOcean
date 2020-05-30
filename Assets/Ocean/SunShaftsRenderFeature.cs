@@ -10,7 +10,9 @@ namespace UnityEngine.Rendering.Universal
 
         public override void Create()
         {
-            sunShaftsPS = Shader.Find("Hidden/Universal Render Pipeline/SunShaftsComposite");
+            if(sunShaftsPS == null)
+               sunShaftsPS = Shader.Find("Hidden/Universal Render Pipeline/SunShaftsComposite");
+
             sunShaftsPass = new SunShaftsPass(RenderPassEvent.BeforeRenderingPostProcessing, sunShaftsPS);
         }
 

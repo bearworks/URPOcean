@@ -2,7 +2,7 @@
 {
 	Properties
 	{
-		_BaseColor("Base color", COLOR) = (.54, .95, .99, 1)
+		_BaseColor("Under Water color", COLOR) = (.54, .95, .99, 1)
 		_DistortMap("Distort Map", 2D) = "black" {}
 		_DepthFade("Depth Fade", Range(0.0, 1.0)) = 0.95
 	}

@@ -403,25 +403,26 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	 worldNormal2 = normalize(worldNormal2 + i.normalInterpolator.xyz); //sharp normal
 #endif
 
-	 if (underwater)
-	 {
-		 worldNormal = -worldNormal;
-		 worldNormal2 = -worldNormal2;
-	 }
 
 	float3 viewVector = (_WorldSpaceCameraPos - i.viewInterpolator.xyz);
 	float fade = Fade(viewVector);
 	viewVector = normalize(viewVector);
 
-	half4 rtReflections;
-	if (!underwater)
-		rtReflections = tex2D(_PlanarReflectionTexture, i.screenPos.xy / i.screenPos.w + lerp(0, worldNormal.xz * REALTIME_DISTORTION,  fade));
-	else
-		rtReflections = _ShallowColor;
-
 	// shading for fresnel 
 	worldNormal = normalize(lerp(WORLD_UP, worldNormal, fade));
 	worldNormal2 = normalize(lerp(worldNormal2, WORLD_UP, 0));
+
+	half4 rtReflections;
+	if (!underwater)
+		rtReflections = tex2D(_PlanarReflectionTexture, i.screenPos.xy / i.screenPos.w + lerp(0, worldNormal.xz * REALTIME_DISTORTION, fade));
+	else
+		rtReflections = _ShallowColor;
+
+	if (underwater)
+	{
+		worldNormal = -worldNormal;
+		worldNormal2 = -worldNormal2;
+	}
 
 	half dotNV = saturate(dot(viewVector, WORLD_UP));
 

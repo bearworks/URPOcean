@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NeoOceanM 2
+  m_Name: NeoOcean2
   m_Shader: {fileID: 4800000, guid: 1a629c730af7ec5429ed2240e1f2c083, type: 3}
   m_ShaderKeywords: MARMO_BOX_PROJECTION_OFF MARMO_SKY_BLEND_OFF NEOOCEAN_ALPHABLEND_ON
     NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON NEOOCEAN_FOAM_ON NEOOCEAN_FOG_ON
@@ -57,7 +57,7 @@ Material:
     - _WaveScale2: 0.185
     - _nSnell: 3
     m_Colors:
-    - _BaseColor: {r: 0.034061406, g: 0.3088233, b: 0.0359563, a: 1}
+    - _BaseColor: {r: 0.03529411, g: 0.2616345, b: 0.30980393, a: 1}
     - _DistortParams: {r: 0.02, g: 0.03, b: 2.9, a: 1}
     - _Foam: {r: 2, g: 250, b: 2, a: 2}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}

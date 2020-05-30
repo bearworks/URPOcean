@@ -5,8 +5,9 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: NeoOceanM
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NeoOcean
   m_Shader: {fileID: 4800000, guid: 1a629c730af7ec5429ed2240e1f2c083, type: 3}
   m_ShaderKeywords: NEOOCEAN_ALPHABLEND_ON NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON
     NEOOCEAN_FOAM_ON NEOOCEAN_FOG_OFF NEOOCEAN_GERSTNER_ON NEOOCEAN_PHONG_ON NEOOCEAN_PROJECTED_ON
@@ -162,6 +163,8 @@ Material:
     - _InvFadeDepthFade: 0.07197756
     - _InvFadeFoam: 0.1217
     - _NormalsDisplacement: 0
+    - _PIXELFORCES: 0
+    - _PROJECTED: 0
     - _ReflDistort: 0.9267696
     - _RefrDistort: 1.4393286
     - _SatScale: 1.5

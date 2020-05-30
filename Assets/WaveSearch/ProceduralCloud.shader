@@ -509,7 +509,7 @@ Shader "Skybox/ProceduralCloud" {
 						float rayLen = max(0, Thickness / Sec);
 
 						float3 light = _WorldSpaceLightPos0.xyz;
-						float hg = HenyeyGreenstein(dot(-dir, light)) * 0.5 + 0.5;
+						float hg = min(HenyeyGreenstein(dot(-dir, light)) * 0.5 + 0.5, 2);
 
 						// Trace clouds through that layer...
 						float2 shadeSum = float2(0.0, .0);

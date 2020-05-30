@@ -4,9 +4,10 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: NeoOceanM 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NeoOcean1
   m_Shader: {fileID: 4800000, guid: 1a629c730af7ec5429ed2240e1f2c083, type: 3}
   m_ShaderKeywords: MARMO_BOX_PROJECTION_OFF MARMO_SKY_BLEND_OFF NEOOCEAN_ALPHABLEND_ON
     NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON NEOOCEAN_FOAM_ON NEOOCEAN_FOG_ON
@@ -45,6 +46,7 @@ Material:
     - _FoamDistort: 0.5
     - _FresnelScale: 0.577
     - _PIXELFORCES: 1
+    - _PROJECTED: 0
     - _ShallowEdge: 0.233
     - _Shininess: 500
     - _SunIntensity: 2
