@@ -441,11 +441,19 @@ Shader "Skybox/ProceduralCloud" {
 						return max(h, 0);
 					}
 
-					float GetLighting(float3 p, float3 sun, float len)
+
+					float HenyeyGreenstein(float cosine)
+					{
+						float _HGCoeff = -0.84;
+						float g2 = _HGCoeff * _HGCoeff;
+						return 0.5 * (1 - g2) / pow(1 + g2 - 2 * _HGCoeff * cosine, 1.5);
+					}
+
+					float GetLighting(float3 p, float3 sun, float len, float hg)
 					{
 #if 1
 						float l = MapSH(p + sun * len) - MapSH(p);
-						return (max(l + 1, 0) * _CloudLit);
+						return (max(exp(-l) * hg, 0) * _CloudLit);
 #else
 						return _CloudLit;
 #endif
@@ -500,6 +508,9 @@ Shader "Skybox/ProceduralCloud" {
 
 						float rayLen = max(0, Thickness / Sec);
 
+						float3 light = _WorldSpaceLightPos0.xyz;
+						float hg = HenyeyGreenstein(dot(-dir, light)) * 0.5 + 0.5;
+
 						// Trace clouds through that layer...
 						float2 shadeSum = float2(0.0, .0);
 						// I think this is as small as the loop can be
@@ -508,12 +519,12 @@ Shader "Skybox/ProceduralCloud" {
 						{
 							if (shadeSum.y < 0) break;
 							Thickness = length(e - p);
-							float ll = GetLighting(p, _WorldSpaceLightPos0.xyz, Thickness / Sec);
+							float ll = GetLighting(p, _WorldSpaceLightPos0.xyz, Thickness / Sec, hg);
 							shadeSum += float2(ll, Map(p)) * (1.0 - shadeSum.y);
 							p += dir * rayLen;
 						}
 
-						return float4(lerp(_LightColor0.rgb * _Color.rgb, 1, shadeSum.x), pow(shadeSum.y, 2.2));
+						return float4(lerp(_LightColor0.rgb * _Color.rgb, 1, shadeSum.x), shadeSum.y);
 					}
 
 					half4 frag(v2f IN) : SV_Target
@@ -552,7 +563,7 @@ Shader "Skybox/ProceduralCloud" {
 							float4 c = GetCloudColor(-ray);
 							c.a *= smoothstep(0.001, 0.1, 1.0 - yy);
 
-							col = lerp(col, c, c.a);
+							col = lerp(col, c, saturate(c.a));
 #endif
 							return half4(col,1.0);
 
