@@ -412,21 +412,20 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	worldNormal = normalize(lerp(WORLD_UP, worldNormal, fade));
 	worldNormal2 = normalize(lerp(worldNormal2, WORLD_UP, 0));
 
-	half4 rtReflections;
-	if (!underwater)
-		rtReflections = tex2D(_PlanarReflectionTexture, i.screenPos.xy / i.screenPos.w + lerp(0, worldNormal.xz * REALTIME_DISTORTION, fade));
-	else
-		rtReflections = _ShallowColor;
-
 	if (underwater)
 	{
 		worldNormal = -worldNormal;
 		worldNormal2 = -worldNormal2;
 	}
 
-	half dotNV = saturate(dot(viewVector, WORLD_UP));
+	half4 rtReflections;
+	if (!underwater)
+		rtReflections = tex2D(_PlanarReflectionTexture, i.screenPos.xy / i.screenPos.w + lerp(0, worldNormal.xz * REALTIME_DISTORTION, fade));
+	else
+		rtReflections = _ShallowColor;
 
-	half dotNV2 = saturate(dot(viewVector, worldNormal));
+
+	half dotNV = saturate(dot(viewVector, worldNormal));
 	// base, depth & reflection colors
 	half4 baseColor = _BaseColor;
 
@@ -439,11 +438,9 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 reflectionColor = rtReflections;
 
-	float fresnel = (1 - dotNV2);
-	fresnel *= fresnel;
-	fresnel *= fresnel;
+	float fresnel = pow(1 - dotNV, 5);
 
-	half fresnelFac = baseColor + (1 - baseColor) * fresnel;
+	half4 fresnelFac = baseColor + (1 - baseColor) * fresnel;
 
 	if (underwater)
 	{
@@ -467,9 +464,9 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 		half spec = PhongSpecular(viewVector, worldNormal2);
 #endif
 
-	float alpha = saturate(_AboveDepth * depth  * (_BaseColor.a + dotNV));
+	float alpha = saturate(_AboveDepth * depth) * saturate(_BaseColor.a + dotNV);
 
-	baseColor += spec * lerp(_SpecularColor * fade, 0.05, 0) / max(alpha, 0.1);
+	baseColor += spec * lerp(_SpecularColor * fade, 1, 0.5) / max(alpha, 0.1);
 
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
