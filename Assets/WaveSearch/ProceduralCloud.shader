@@ -449,10 +449,10 @@ Shader "Skybox/ProceduralCloud" {
 						return 0.5 * (1 - g2) / pow(1 + g2 - 2 * _HGCoeff * cosine, 1.5);
 					}
 
-					float GetLighting(float3 p, float3 sun, float len, float hg)
+					float GetLighting(float3 p, float3 sun, float len, float hg, float den)
 					{
 #if 1
-						float l = MapSH(p + sun * len) - MapSH(p);
+						float l = MapSH(p + sun * len) - den;
 						return (max(exp(-l) * hg, 0) * _CloudLit);
 #else
 						return _CloudLit;
@@ -519,8 +519,9 @@ Shader "Skybox/ProceduralCloud" {
 						{
 							if (shadeSum.y < 0) break;
 							Thickness = length(e - p);
-							float ll = GetLighting(p, _WorldSpaceLightPos0.xyz, Thickness / Sec, hg);
-							shadeSum += float2(ll, Map(p)) * (1.0 - shadeSum.y);
+							float den = Map(p);
+							float ll = GetLighting(p, _WorldSpaceLightPos0.xyz, Thickness, hg, den);
+							shadeSum += float2(ll, den) * (1.0 - shadeSum.y);
 							p += dir * rayLen;
 						}
 
