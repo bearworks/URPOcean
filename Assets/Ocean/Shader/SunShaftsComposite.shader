@@ -103,7 +103,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		half4 outColor = 0;
 		
 		// consider shafts blockers
-		if (depthSample > 0.99)
+		if (depthSample > 0.01)
 			outColor = TransformColor (tex) * dist;
 			
 		return outColor;

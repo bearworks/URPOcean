@@ -14,6 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   sunShaftsPS: {fileID: 4800000, guid: 6061735351087c24ea4ab13ba7f0a86a, type: 3}
+--- !u!114 &-2026481819081275869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47ce18ef325f3a842aafbc0790418112, type: 3}
+  m_Name: NewRecopyDepthFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27,8 +40,9 @@ MonoBehaviour:
   m_Name: UniversalRenderPipelineAsset_Renderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
+  - {fileID: -2026481819081275869}
   - {fileID: -9220191123737698369}
-  m_RendererFeatureMap: bf9f670c064d0b80
+  m_RendererFeatureMap: 2386dfb5857de0e3bf9f670c064d0b80
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
