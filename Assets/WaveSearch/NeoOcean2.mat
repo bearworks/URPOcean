@@ -49,7 +49,7 @@ Material:
     - _PROJECTED: 1
     - _ShallowEdge: 0.385
     - _Shininess: 500
-    - _SunIntensity: 1
+    - _SunIntensity: 10
     - _WaveBump: 0.66
     - _WaveFreq: 3
     - _WaveHeight: 1
