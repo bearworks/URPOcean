@@ -5,7 +5,7 @@ namespace UnityEngine.Rendering.Universal
 {
     public class RebuildDepthFeature : ScriptableRendererFeature
     {
-        CopyDepthPass m_CopyDepthPass;
+        XCopyDepthPass m_CopyDepthPass;
 
         Material copyDepthPassMaterial = null;
 
@@ -19,7 +19,7 @@ namespace UnityEngine.Rendering.Universal
 
             copyDepthPassMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/Universal Render Pipeline/CopyDepth"));
 
-            m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingTransparents, copyDepthPassMaterial);
+            m_CopyDepthPass = new XCopyDepthPass(RenderPassEvent.AfterRenderingTransparents, copyDepthPassMaterial);
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
