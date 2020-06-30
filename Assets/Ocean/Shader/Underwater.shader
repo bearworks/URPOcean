@@ -9,7 +9,7 @@
 
 	SubShader
 	{
-		Tags { "RenderPipeline"="UniversalForward" "RenderType"="Transparent" "Queue"="Transparent-110" }
+		Tags { "LightMode"="Underwater" "RenderType"="Transparent" "Queue"="Transparent" }
 
 		Pass
 		{
@@ -168,13 +168,15 @@
 				return normalize(normal);
 			}
 
+			TEXTURE2D(_ColorTexture); SAMPLER(sampler_ColorTexture);
+
 			half4 Frag(VaryingsUnder input) : SV_Target
 			{
 				float2 uv = input.screenPos.xy / input.screenPos.w;
 
 				half3 distort = PerPixelBump(_DistortMap, uv.xyxy * _DistortMap_ST.xyxy + _WaveTime * _DistortMap_ST.w, _DistortMap_ST.z);
 
-				half4 color = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uv + distort);
+				half4 color = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, uv + distort);
 
 				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv + distort), _ZBufferParams);
 

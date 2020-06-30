@@ -115,10 +115,10 @@ MonoBehaviour:
     max: 2
   sunShaftBlurRadius:
     m_OverrideState: 1
-    m_Value: 0.6
+    m_Value: 1.64
   maxRadius:
     m_OverrideState: 1
-    m_Value: 0.75
+    m_Value: 0.59
 --- !u!114 &3754019864058382945
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -452,6 +452,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	if (underwater)
 	{
 		fresnelFac = 1 - fresnelFac;
+
+		dotNV = -dotNV;
 	}
 
 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
