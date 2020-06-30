@@ -242,9 +242,10 @@ struct v2f_MQ
 	float4 bumpCoords : TEXCOORD1;
 	float4 screenPos : TEXCOORD2;
 	float3 normalInterpolator : TEXCOORD3;
+	float4 shadowCoord : TEXCOORD4;
 #ifdef USE_TANGENT
-	float3 tanInterpolator : TEXCOORD4;
-	float3 binInterpolator : TEXCOORD5;
+	float3 tanInterpolator : TEXCOORD5;
+	float3 binInterpolator : TEXCOORD6;
 #endif
 };
 
@@ -340,6 +341,12 @@ v2f_MQ vert_MQ(appdata_base vert)
 	o.bumpCoords.xyzw = float4(tileableUvScale, tileableUv);
 
 	o.viewInterpolator = worldSpaceVertex;
+
+#if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+	o.shadowCoord = TransformWorldToShadowCoord(o.viewInterpolator);
+	#else
+	o.shadowCoord = float4(0, 0, 0, 0);
+#endif
 
 	return o;
 }
@@ -447,7 +454,13 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 		fresnelFac = 1 - fresnelFac;
 	}
 
-	baseColor = lerp(baseColor, reflectionColor, fresnelFac);
+#if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+	half shadow = MainLightRealtimeShadow(i.shadowCoord);
+#else
+	half shadow = 1;
+#endif
+
+	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
 
 	float edge = saturate(_ShallowEdge * depth);
 	baseColor = lerp(shallowColor, baseColor, edge);
@@ -466,7 +479,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float alpha = saturate(_AboveDepth * depth) * saturate(_BaseColor.a + dotNV);
 
-	baseColor += spec * lerp(_SpecularColor * fade, 1, 0.5) / max(alpha, 0.1);
+	baseColor += spec * lerp(_SpecularColor * fade, shadow, 0.5) / max(alpha, 0.1);
 
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 

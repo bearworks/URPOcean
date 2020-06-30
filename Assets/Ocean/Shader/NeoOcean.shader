@@ -43,6 +43,9 @@ Properties {
 
 	#pragma multi_compile _PIXELFORCES_OFF _PIXELFORCES_ON
 	#pragma multi_compile _PROJECTED_OFF _PROJECTED_ON
+	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+
 	#include "NeoInclude.hlsl"
 	#pragma vertex vert_MQ
 	#pragma fragment frag_MQ
