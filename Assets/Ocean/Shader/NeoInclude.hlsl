@@ -238,14 +238,13 @@ inline float Fade(float3 d)
 struct v2f_MQ
 {
 	float4 pos : SV_POSITION;
-	float3 viewInterpolator : TEXCOORD0;
+	float3 worldPos : TEXCOORD0;
 	float4 bumpCoords : TEXCOORD1;
 	float4 screenPos : TEXCOORD2;
 	float3 normalInterpolator : TEXCOORD3;
-	float4 shadowCoord : TEXCOORD4;
 #ifdef USE_TANGENT
-	float3 tanInterpolator : TEXCOORD5;
-	float3 binInterpolator : TEXCOORD6;
+	float3 tanInterpolator : TEXCOORD4;
+	float3 binInterpolator : TEXCOORD5;
 #endif
 };
 
@@ -340,13 +339,7 @@ v2f_MQ vert_MQ(appdata_base vert)
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;
 	o.bumpCoords.xyzw = float4(tileableUvScale, tileableUv);
 
-	o.viewInterpolator = worldSpaceVertex;
-
-#if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-	o.shadowCoord = TransformWorldToShadowCoord(o.viewInterpolator);
-	#else
-	o.shadowCoord = float4(0, 0, 0, 0);
-#endif
+	o.worldPos = worldSpaceVertex;
 
 	return o;
 }
@@ -410,8 +403,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	 worldNormal2 = normalize(worldNormal2 + i.normalInterpolator.xyz); //sharp normal
 #endif
 
+	float3 viewVector = (_WorldSpaceCameraPos - i.worldPos.xyz);
 
-	float3 viewVector = (_WorldSpaceCameraPos - i.viewInterpolator.xyz);
 	float fade = Fade(viewVector);
 	viewVector = normalize(viewVector);
 
@@ -457,7 +450,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	}
 
 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-	half shadow = MainLightRealtimeShadow(i.shadowCoord);
+	half shadow = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.worldPos));
 #else
 	half shadow = 1;
 #endif
@@ -468,7 +461,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	baseColor = lerp(shallowColor, baseColor, edge);
 
 #if defined (_PIXELFORCES_ON)
-		float3 Dir = normalize(i.viewInterpolator.xyz - _WorldLightPos);
+		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos);
 		float spec = PhongSpecularDir(viewVector, worldNormal2, Dir);
 
 		// to get an effect when you see through the material
