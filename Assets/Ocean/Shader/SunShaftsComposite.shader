@@ -96,10 +96,10 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		depthSample = Linear01Depth (depthSample, _ZBufferParams);
 		 
 		// consider maximum radius
-		//half2 vec = _SunPosition.xy - i.uv.xy;		
+		half2 vec = _SunPosition.xy - i.uv.xy;		
 
-		half dist = saturate (_SunPosition.w);		
-		
+		half dist = saturate(_SunPosition.w - length(vec.xy));
+
 		half4 outColor = 0;
 		
 		// consider shafts blockers
