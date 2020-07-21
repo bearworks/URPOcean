@@ -137,9 +137,6 @@ half4 _WorldLightDir;
 	
 // fresnel, vertex & bump displacements & strength
 float4 _DistortParams; // need float precision
-half _FresnelScale;	
-
-sampler2D _FresnelLookUp;
 
 // shortcuts
 #define LERPREFL _DistortParams.x
@@ -253,6 +250,8 @@ float4 _Map0_TexelSize;
 
 sampler2D _PlanarReflectionTexture;
 
+TEXTURE2D(_WaterFXMap); SAMPLER(sampler_WaterFXMap);
+
 TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
 TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
 
@@ -331,6 +330,12 @@ v2f_MQ vert_MQ(appdata_base vert)
 	o.binInterpolator.xyz = wave.binormal;
 #endif
 
+	half4 screenUV = ComputeScreenPos(TransformWorldToHClip(worldSpaceVertex));
+	screenUV.xyz /= screenUV.w;
+
+	half4 waterFX = SAMPLE_TEXTURE2D_LOD(_WaterFXMap, sampler_WaterFXMap, screenUV.xy, 0);
+	worldSpaceVertex.y += (waterFX.w * 2 - 1) ;
+
 	o.pos = mul(UNITY_MATRIX_VP, float4(worldSpaceVertex, 1.0));
 
 	o.screenPos = ComputeScreenPos(o.pos);
@@ -381,6 +386,9 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	slope += c.xy;
 	slope += c.zw;
 
+	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, (i.screenPos.xy) / i.screenPos.w);
+	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
+
 	half k = 0;
 
 #ifdef USE_TANGENT
@@ -404,7 +412,6 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 #endif
 
 	float3 viewVector = (_WorldSpaceCameraPos - i.worldPos.xyz);
-
 	float fade = Fade(viewVector);
 	viewVector = normalize(viewVector);
 
@@ -432,7 +439,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half2 refrCoord = (i.screenPos.xy) / i.screenPos.w + worldNormal.xz * LERPREFL;
 
 	float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, refrCoord), _ZBufferParams);
-	depth = depth - i.screenPos.w + 0;
+	depth = depth - i.screenPos.w;
 
 	half4 shallowColor = _ShallowColor;
 
@@ -440,7 +447,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float fresnel = pow(1 - dotNV, 5);
 
-	half4 fresnelFac = baseColor + (1 - baseColor) * fresnel;
+	half fresnelFac = 0.04 + 0.96 * fresnel;
 
 	if (underwater)
 	{
@@ -455,10 +462,12 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half shadow = 1;
 #endif
 
-	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
+	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
 	float edge = saturate(_ShallowEdge * depth);
-	baseColor = lerp(shallowColor, baseColor, edge);
+	baseColor = lerp(shallowColor * refractions, baseColor, edge);
+
+	baseColor = lerp(baseColor, reflectionColor, fresnelFac );
 
 #if defined (_PIXELFORCES_ON)
 		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos);
@@ -466,8 +475,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 		// to get an effect when you see through the material
 		// hard coded pow constant
-		float InScatter = pow(saturate(dot(viewVector, normalize(worldNormal + Dir))), 2) * lerp(3, .1f, edge);
-		baseColor += InScatter * shallowColor;
+		float InScatter = pow(abs(dot(viewVector, normalize(worldNormal + Dir))), 2) * lerp(3, .1f, edge);
+		baseColor += InScatter * shallowColor * shadow;
 #else
 		half spec = PhongSpecular(viewVector, worldNormal2);
 #endif
@@ -476,9 +485,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor += spec * lerp(_SpecularColor * fade, shadow, 0.5) / max(alpha, 0.1);
 
-	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
-
-	baseColor = lerp(refractions, baseColor, alpha);
+	baseColor = lerp(refractions, baseColor * (1 + length(waterFX.a - 0.5) * 8) + waterFX.r, alpha);
 
 	return half4(clamp(baseColor.rgb, 0, 48),saturate(baseColor.a));
 }
