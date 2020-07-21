@@ -1,11 +1,10 @@
-﻿using NOcean;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
-namespace BoatAttack.Boat
+namespace NOcean
 {
     /// <summary>
     /// Used to generate two wakes (linerenderers) for the boats

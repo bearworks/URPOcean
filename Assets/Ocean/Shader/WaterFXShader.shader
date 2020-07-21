@@ -1,4 +1,4 @@
-﻿Shader "BoatAttack/WaterFXShader"
+﻿Shader "NOcean/WaterFXShader"
 {
 	Properties
 	{
