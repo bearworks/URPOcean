@@ -31,6 +31,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: b7daec1999f9cfe4385b075d496cea07, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FoamMask:
+        m_Texture: {fileID: 2800000, guid: 927dfb18f58518e4fad57e1f03664774, type: 3}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
     - _FoamTex:
         m_Texture: {fileID: 2800000, guid: 1da473d0f1469374fb768a9a25db0ec5, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -44,6 +48,7 @@ Material:
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
+    - _Fresnel: 0.04
     - _FresnelScale: 0.62
     - _PIXELFORCES: 1
     - _PROJECTED: 1
@@ -59,7 +64,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.079476684, g: 0.3584906, b: 0.30613968, a: 1}
     - _DistortParams: {r: 0.02, g: 0.03, b: 2.9, a: 1}
-    - _Foam: {r: 2, g: 250, b: 2, a: 2}
+    - _Foam: {r: 1, g: 1, b: 1, a: 1}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
     - _ShallowColor: {r: 0.3443396, g: 0.7127584, b: 1, a: 1}

@@ -118,7 +118,7 @@ half _InvNeoScale;
 half4 _SpecularColor;
 half4 _BaseColor;
 half4 _ShallowColor;
-half4 _ReflectionColor;
+half _Fresnel;
 
 // edge & shore fading
 half _AboveDepth;
@@ -251,9 +251,12 @@ float4 _Map0_TexelSize;
 sampler2D _PlanarReflectionTexture;
 
 TEXTURE2D(_WaterFXMap); SAMPLER(sampler_WaterFXMap);
-
+TEXTURE2D(_FoamMask); SAMPLER(sampler_FoamMask);
 TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
 TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
+
+float4 _Foam;// need float precision
+float4 _FoamMask_ST;// need float precision
 
 // interpolator structs
 #if defined (_PROJECTED_ON)
@@ -339,6 +342,8 @@ v2f_MQ vert_MQ(appdata_base vert)
 	o.pos = mul(UNITY_MATRIX_VP, float4(worldSpaceVertex, 1.0));
 
 	o.screenPos = ComputeScreenPos(o.pos);
+
+	o.screenPos.z = pow(saturate(wave.position.y), _Foam.z);
 
 	float2 tileableUv = worldSpaceVertex.xz;
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;
@@ -447,7 +452,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float fresnel = pow(1 - dotNV, 5);
 
-	half fresnelFac = 0.04 + 0.96 * fresnel;
+	half fresnelFac = _Fresnel + (1 - _Fresnel) * fresnel;
 
 	if (underwater)
 	{
@@ -485,9 +490,15 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor += spec * lerp(_SpecularColor * fade, shadow, 0.5) / max(alpha, 0.1);
 
-	baseColor = lerp(refractions, baseColor * (1 + length(waterFX.a - 0.5) * 8) + waterFX.r, alpha);
+	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w).rgb; //r=thick, g=medium, b=light
 
-	return half4(clamp(baseColor.rgb, 0, 48),saturate(baseColor.a));
+	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, waterFX.r * foamMap.r);
+	half shoreFoam = (1 - saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2))) * foamMap.b * 2;
+	half peakFoam = i.screenPos.z * foamMap.r * 2;
+
+	baseColor = lerp(refractions, baseColor + max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x, alpha);
+
+	return half4(clamp(baseColor.rgb, 0, 48), 1);
 }
 
 

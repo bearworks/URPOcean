@@ -63,8 +63,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamMask:
-        m_Texture: {fileID: 2800000, guid: 587ae20458cc5914581be9b3f7364f58, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 927dfb18f58518e4fad57e1f03664774, type: 3}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     - _Fresnel:
         m_Texture: {fileID: 2800000, guid: 5b5c5575fd4c74abd9f7b30862fb76a3, type: 3}
@@ -156,6 +156,7 @@ Material:
     - _FadeIntensity: 256
     - _FoamWaveDependency: 0.10205479
     - _Fog: 0.018
+    - _Fresnel: 0.04
     - _FresnelPower: 1.7931035
     - _FresnelScale: 0.74
     - _GerstnerIntensity: 1
@@ -189,7 +190,7 @@ Material:
     - WaveSpeed: {r: 1.086165, g: 4.440575, b: 12.105146, a: -3.0206447}
     - _AnimationDirection: {r: 2, g: 4, b: 2, a: -1}
     - _AnimationTiling: {r: 0.04582553, g: 0.0182, b: 0.045714468, a: 0.027129691}
-    - _BaseColor: {r: 0.09104663, g: 0.3536417, b: 0.6226415, a: 1}
+    - _BaseColor: {r: 0.06972327, g: 0.27283013, b: 0.482, a: 1}
     - _BumpDirection: {r: 0.00000008742278, g: 1, b: 0.45399055, a: 0.89100647}
     - _BumpMap_ST: {r: 1, g: 1, b: 0, a: 0}
     - _BumpTiling: {r: 0.05, g: 0.005, b: -0.01, a: -0.001}
@@ -201,7 +202,7 @@ Material:
     - _DistortParams: {r: 0.01, g: 0.3, b: 6.71, a: 2.3}
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
-    - _Foam: {r: 0.05, g: -0.001, b: 0.26, a: 0.01}
+    - _Foam: {r: 1.4, g: 2, b: 1.3, a: 0.13}
     - _FoamTiling: {r: 0.03, g: 0.003, b: 0.001, a: 0.001}
     - _FoamWaveParams: {r: 0, g: 0.24918434, b: 3.3395782, a: 1}
     - _Fresnel_ST: {r: 1, g: 1, b: 0, a: 0}
