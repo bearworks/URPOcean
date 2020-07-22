@@ -493,7 +493,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w).rgb; //r=thick, g=medium, b=light
 
 	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, waterFX.r * foamMap.r);
-	half shoreFoam = (1 - saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2))) * foamMap.b * 2;
+	half shoreDepth = saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2));
+	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.5 + 1) * (1 - shoreDepth) * foamMap.b * 2;
 	half peakFoam = i.screenPos.z * foamMap.r * 2;
 
 	baseColor = lerp(refractions, baseColor + max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x, alpha);
