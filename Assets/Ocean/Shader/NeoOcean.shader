@@ -1,7 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-
-Shader "NeoOcean/NeoSurface" { 
+﻿Shader "NeoOcean/NeoSurface" { 
 Properties {
 	_BaseColor ("Base color", COLOR)  = ( .54, .95, .99, 1)	
 	_ShallowColor ("Shallow color", COLOR)  = ( .10, .4, .43, 1)	

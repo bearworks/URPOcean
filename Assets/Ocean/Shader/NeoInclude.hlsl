@@ -110,7 +110,7 @@ struct appdata_base {
 	//UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-#define MaxLitValue 4
+#define MaxLitValue 48
 
 half _InvNeoScale;
 
@@ -494,12 +494,12 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, waterFX.r * foamMap.r);
 	half shoreDepth = saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2));
-	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.5 + 1) * (1 - shoreDepth) * foamMap.b * 2;
+	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.25 + 0.75) * (1 - shoreDepth) * foamMap.b * 2;
 	half peakFoam = i.screenPos.z * foamMap.r * 2;
 
 	baseColor = lerp(refractions, baseColor + max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x, alpha);
 
-	return half4(clamp(baseColor.rgb, 0, 48), 1);
+	return half4(clamp(baseColor.rgb, 0, MaxLitValue), 1);
 }
 
 
