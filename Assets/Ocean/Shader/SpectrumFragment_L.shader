@@ -31,7 +31,7 @@ Shader "NeoOcean/SpectrumFragment_L" {
 			{
     			v2f OUT;
     			OUT.pos = UnityObjectToClipPos(v.vertex);
-    			OUT.uv = v.texcoord;
+    			OUT.uv = v.texcoord.xy;
     			return OUT;
 			}
 			

@@ -235,7 +235,7 @@ inline float Fade(float3 d)
 struct v2f_MQ
 {
 	float4 pos : SV_POSITION;
-	float3 worldPos : TEXCOORD0;
+	float4 worldPos : TEXCOORD0;
 	float4 bumpCoords : TEXCOORD1;
 	float4 screenPos : TEXCOORD2;
 	float3 normalInterpolator : TEXCOORD3;
@@ -349,7 +349,8 @@ v2f_MQ vert_MQ(appdata_base vert)
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;
 	o.bumpCoords.xyzw = float4(tileableUvScale, tileableUv);
 
-	o.worldPos = worldSpaceVertex;
+	o.worldPos.xyz = worldSpaceVertex;
+	o.worldPos.w = ComputeFogFactor(o.pos.z);
 
 	return o;
 }
@@ -462,7 +463,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	}
 
 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-	half shadow = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.worldPos));
+	half shadow = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.worldPos.xyz));
 #else
 	half shadow = 1;
 #endif
@@ -475,7 +476,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	baseColor = lerp(baseColor, reflectionColor, fresnelFac );
 
 #if defined (_PIXELFORCES_ON)
-		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos);
+		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
 		float spec = PhongSpecularDir(viewVector, worldNormal2, Dir);
 
 		// to get an effect when you see through the material
@@ -498,6 +499,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half peakFoam = i.screenPos.z * foamMap.r * 2;
 
 	baseColor = lerp(refractions, baseColor + max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x, alpha);
+
+	baseColor.rgb = MixFog(baseColor.rgb, i.worldPos.w);
 
 	return half4(clamp(baseColor.rgb, 0, MaxLitValue), 1);
 }

@@ -45,11 +45,11 @@ Properties {
 	#pragma multi_compile _PROJECTED_OFF _PROJECTED_ON
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+	#pragma multi_compile_fog
 
 	#include "NeoInclude.hlsl"
 	#pragma vertex vert_MQ
 	#pragma fragment frag_MQ
-			//	#pragma multi_compile __ FOG_LINEAR
 	#pragma fragmentoption ARB_precision_hint_fastest
 
 	ENDHLSL

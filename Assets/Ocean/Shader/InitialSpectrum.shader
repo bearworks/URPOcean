@@ -58,14 +58,14 @@
             float cp = omegak(kp) / kp;
 
             // friction velocity
-            float z0 = 3.7e-5 * sqr(U10) / 9.81 * pow(U10 / cp, 0.9); // Eq 66
+            float z0 = 3.7e-5 * sqr(U10) / 9.81 * pow(saturate(U10 / cp), 0.9); // Eq 66
             float u_star = 0.41 * U10 / log(10.0 / z0); // Eq 60
 
             float Lpm = exp(-5.0 / 4.0 * sqr(kp / k)); // after Eq 3
             float gamma = (Omega < 1.0) ? 1.7 : 1.7 + 6.0 * log(Omega); // after Eq 3 // log10 or log?
             float sigma = 0.08 * (1.0 + 4.0 / pow(Omega, 3.0)); // after Eq 3
             float Gamma = exp(-1.0 / (2.0 * sqr(sigma)) * sqr(sqrt(k / kp) - 1.0));
-            float Jp = pow(gamma, Gamma); // Eq 3
+            float Jp = pow(saturate(gamma), Gamma); // Eq 3
             float Fp = Lpm * Jp * exp(-Omega / sqrt(10.0) * (sqrt(k / kp) - 1.0)); // Eq 32
             float alphap = 0.006 * sqrt(Omega); // Eq 34
             float Bl = 0.5 * alphap * cp / c * Fp; // Eq 31

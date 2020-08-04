@@ -176,9 +176,9 @@
 
 				half3 distort = PerPixelBump(_DistortMap, uv.xyxy * _DistortMap_ST.xyxy + _WaveTime * _DistortMap_ST.w, _DistortMap_ST.z);
 
-				half4 color = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, uv + distort);
+				half4 color = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, uv + distort.xy);
 
-				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv + distort), _ZBufferParams);
+				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv + distort.xy), _ZBufferParams);
 
 				return lerp(_BaseColor, color, saturate((1 - depth) * _DepthFade));
 			}
