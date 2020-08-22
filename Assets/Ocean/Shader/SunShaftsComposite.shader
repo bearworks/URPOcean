@@ -36,7 +36,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	v2f vert(Attributes v ) 
 	{
 		v2f o;
-		o.pos = TransformObjectToHClip(v.positionOS);
+		o.pos = TransformObjectToHClip(v.positionOS.xyz);
 		o.uv = v.uv.xy;
 		
 		return o;
@@ -63,7 +63,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	v2f_radial vert_radial(Attributes v ) 
 	{
 		v2f_radial o;
-		o.pos = TransformObjectToHClip(v.positionOS);
+		o.pos = TransformObjectToHClip(v.positionOS.xyz);
 		
 		o.uv.xy =  v.uv.xy;
 		o.blurVector = (_SunPosition.xy - v.uv.xy) * _BlurRadius4.xy;
@@ -89,7 +89,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	
 	half4 frag_depth (v2f i) : SV_Target {
 
-		float depthSample = SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, i.uv.xy);
+		float depthSample = (SAMPLE_TEXTURE2D_X(_CameraDepthTexture, sampler_PointClamp, i.uv.xy)).r;
 
 		half4 tex = SAMPLE_TEXTURE2D_X(_MainTex, sampler_PointClamp, i.uv.xy);
 		
@@ -107,6 +107,50 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 			outColor = TransformColor (tex) * dist;
 			
 		return outColor;
+	}
+
+	half4 FragBlurH(Varyings input) : SV_Target
+	{
+		UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+		float texelSize = _MainTex_TexelSize.x * 2.0;
+		float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
+
+		// 9-tap gaussian blur on the downsampled source
+		half3 c0 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(texelSize * 4.0, 0.0))).rgb;
+		half3 c1 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(texelSize * 3.0, 0.0))).rgb;
+		half3 c2 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(texelSize * 2.0, 0.0))).rgb;
+		half3 c3 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(texelSize * 1.0, 0.0))).rgb;
+		half3 c4 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv)).rgb;
+		half3 c5 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(texelSize * 1.0, 0.0))).rgb;
+		half3 c6 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(texelSize * 2.0, 0.0))).rgb;
+		half3 c7 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(texelSize * 3.0, 0.0))).rgb;
+		half3 c8 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(texelSize * 4.0, 0.0))).rgb;
+
+		half3 color = c0 * 0.01621622 + c1 * 0.05405405 + c2 * 0.12162162 + c3 * 0.19459459
+					+ c4 * 0.22702703
+					+ c5 * 0.19459459 + c6 * 0.12162162 + c7 * 0.05405405 + c8 * 0.01621622;
+
+		return half4(color,1);
+	}
+
+	half4 FragBlurV(Varyings input) : SV_Target
+	{
+		UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+		float texelSize = _MainTex_TexelSize.y;
+		float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
+
+		// Optimized bilinear 5-tap gaussian on the same-sized source (9-tap equivalent)
+		half3 c0 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(0.0, texelSize * 3.23076923))).rgb;
+		half3 c1 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv - float2(0.0, texelSize * 1.38461538))).rgb;
+		half3 c2 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv)).rgb;
+		half3 c3 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(0.0, texelSize * 1.38461538))).rgb;
+		half3 c4 = (SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, uv + float2(0.0, texelSize * 3.23076923))).rgb;
+
+		half3 color = c0 * 0.07027027 + c1 * 0.31621622
+					+ c2 * 0.22702703
+					+ c3 * 0.31621622 + c4 * 0.07027027;
+
+		return half4(color, 1);
 	}
 	
 	half4 frag_depth_masks (v2f i) : SV_Target {
@@ -192,6 +236,36 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 
 		  ENDHLSL
 	  } 
+
+	//5
+	Pass{
+		ZTest Always Cull Off ZWrite Off
+		Fog { Mode off }
+
+		HLSLPROGRAM
+
+		#pragma fragmentoption ARB_precision_hint_fastest 
+		#pragma vertex vert
+		#pragma fragment FragBlurH
+		#pragma exclude_renderers gles
+
+		ENDHLSL
+	 }
+
+	//6
+	Pass{
+		ZTest Always Cull Off ZWrite Off
+		Fog { Mode off }
+
+		HLSLPROGRAM
+
+		#pragma fragmentoption ARB_precision_hint_fastest 
+		#pragma vertex vert
+		#pragma fragment FragBlurV
+		#pragma exclude_renderers gles
+
+		ENDHLSL
+	 }
 	}
 
 	Fallback off

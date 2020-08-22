@@ -58,10 +58,10 @@ namespace UnityEngine.Rendering.Universal
             else if (m_SunShafts.resolution == SunShaftsResolution.High)
                 divider = 1;
 
-            //if (vSun.z < 0f)
-            //{
-            //    return;
-            //}
+            if (vSun.z < 0f)
+            {
+                return;
+            }
 
             float useRadius = positiveZ ? m_SunShafts.sunShaftBlurRadius.value : -m_SunShafts.sunShaftBlurRadius.value;
 
@@ -72,7 +72,7 @@ namespace UnityEngine.Rendering.Universal
             var destination = currentTarget;
 
             cmd.SetGlobalTexture(MainTexId, destination);
-            cmd.GetTemporaryRT(TempTargetId, desc.width, desc.height, 0, FilterMode.Point, desc.colorFormat);
+            cmd.GetTemporaryRT(TempTargetId, desc.width, desc.height, 0, FilterMode.Bilinear, desc.colorFormat);
             
             cmd.Blit(destination, TempTargetId);
 
@@ -80,7 +80,7 @@ namespace UnityEngine.Rendering.Universal
             int rtH = desc.height / divider;
 
             RenderTexture lrColorB;
-            RenderTexture lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0);
+            RenderTexture lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
 
             // mask out everything except the skybox
             // we have 2 methods, one of which requires depth buffer support, the other one is just comparing images
@@ -109,17 +109,28 @@ namespace UnityEngine.Rendering.Universal
                 // each iteration takes 2 * 6 samples
                 // we update _BlurRadius each time to cheaply get a very smooth look
 
-                lrColorB = RenderTexture.GetTemporary(rtW, rtH, 0);
+                lrColorB = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
                 cmd.Blit(lrDepthBuffer, lrColorB, material, 1);
                 RenderTexture.ReleaseTemporary(lrDepthBuffer);
                 ofs = useRadius * (((it2 * 2.0f + 1.0f) * 6.0f)) / 768.0f;
                 material.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
 
-                lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0);
+                lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
                 cmd.Blit(lrColorB, lrDepthBuffer, material, 1);
                 RenderTexture.ReleaseTemporary(lrColorB);
                 ofs = useRadius * (((it2 * 2.0f + 2.0f) * 6.0f)) / 768.0f;
                 material.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
+            }
+
+            if(m_SunShafts.lastBlur.value)
+            {
+                lrColorB = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
+                cmd.Blit(lrDepthBuffer, lrColorB, material, 5);
+                RenderTexture.ReleaseTemporary(lrDepthBuffer);
+
+                lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
+                cmd.Blit(lrColorB, lrDepthBuffer, material, 6);
+                RenderTexture.ReleaseTemporary(lrColorB);
             }
 
             // put together:

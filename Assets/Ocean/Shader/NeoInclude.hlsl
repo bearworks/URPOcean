@@ -119,6 +119,7 @@ half4 _SpecularColor;
 half4 _BaseColor;
 half4 _ShallowColor;
 half _Fresnel;
+half _Shadow;
 
 // edge & shore fading
 half _AboveDepth;
@@ -496,9 +497,10 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
 	float edge = saturate(_ShallowEdge * depth);
-	baseColor = lerp(shallowColor * refractions, baseColor, edge);
 
-	baseColor = lerp(baseColor, reflectionColor, fresnelFac );
+	shallowColor *= shadow;
+
+	baseColor = lerp(baseColor * lerp(1 - _Shadow, 1, shadow), reflectionColor, fresnelFac );
 
 #if defined (_PIXELFORCES_ON)
 		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
@@ -507,7 +509,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 		// to get an effect when you see through the material
 		// hard coded pow constant
 		float InScatter = pow(abs(dot(viewVector, normalize(worldNormal + Dir))), 2) * lerp(3, .1f, edge);
-		baseColor += InScatter * shallowColor * shadow;
+		baseColor += InScatter * shallowColor;
 #else
 		half spec = PhongSpecular(viewVector, worldNormal2);
 #endif
@@ -521,7 +523,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r);
 	half shoreDepth = saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.25 + 0.75) * (1 - shoreDepth) * foamMap.b * 2;
-	half peakFoam = i.screenPos.z * foamMap.r * 2;
+	half peakFoam = i.screenPos.z * foamMap.r * 2 * shadow;
 
 	baseColor = lerp(refractions, baseColor + max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x, alpha);
 
