@@ -170,7 +170,7 @@ Material:
     - _ReflDistort: 0.9267696
     - _RefrDistort: 1.4393286
     - _SatScale: 1.5
-    - _Shadow: 0.3
+    - _Shadow: 0.35
     - _ShallowEdge: 0.339
     - _Shininess: 350
     - _ShoreBlend: 8

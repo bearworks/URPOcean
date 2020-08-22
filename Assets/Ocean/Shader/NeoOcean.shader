@@ -7,7 +7,7 @@ Properties {
 	_AboveDepth ("AboveDepth", Range (0.1, 1)) = 0.3
 	_ShallowEdge ("ShallowEdge", Range (0.01, 1.0)) = 0.12
 	_Fresnel("Fresnel", Range(0, 0.5)) = 0.04
-	_Shadow("Shadow", Range(0.1, 0.9)) = 0.3
+	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
 	_Fade ("Fade", Range (0, 0.03)) = 0.002
 	
 	_FoamMask("Foam Mask ", 2D) = "black" {}

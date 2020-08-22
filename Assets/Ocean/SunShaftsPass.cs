@@ -58,12 +58,12 @@ namespace UnityEngine.Rendering.Universal
             else if (m_SunShafts.resolution == SunShaftsResolution.High)
                 divider = 1;
 
-            if (vSun.z < 0f)
+            if (!positiveZ)
             {
                 return;
             }
 
-            float useRadius = positiveZ ? m_SunShafts.sunShaftBlurRadius.value : -m_SunShafts.sunShaftBlurRadius.value;
+            float sradius = m_SunShafts.sunShaftBlurRadius.value;
 
             RenderTextureDescriptor desc = renderingData.cameraData.cameraTargetDescriptor;
 
@@ -85,7 +85,7 @@ namespace UnityEngine.Rendering.Universal
             // mask out everything except the skybox
             // we have 2 methods, one of which requires depth buffer support, the other one is just comparing images
 
-            material.SetVector("_BlurRadius4", new Vector4(1.0f, 1.0f, 0.0f, 0.0f) * useRadius);
+            material.SetVector("_BlurRadius4", new Vector4(1.0f, 1.0f, 0.0f, 0.0f) * sradius);
             material.SetVector("_SunPosition", new Vector4(vSun.x, vSun.y, vSun.z, m_SunShafts.maxRadius.value));
             material.SetFloat("_FoSunInt", RenderSettings.sun.intensity);
 
@@ -99,7 +99,7 @@ namespace UnityEngine.Rendering.Universal
 
             int iter = m_SunShafts.radialBlurIterations.value;
 
-            float ofs = useRadius * (1.0f / 768.0f);
+            float ofs = sradius * (1.0f / 768.0f);
 
             material.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
             material.SetVector("_SunPosition", new Vector4(vSun.x, vSun.y, vSun.z, m_SunShafts.maxRadius.value));
@@ -112,13 +112,13 @@ namespace UnityEngine.Rendering.Universal
                 lrColorB = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
                 cmd.Blit(lrDepthBuffer, lrColorB, material, 1);
                 RenderTexture.ReleaseTemporary(lrDepthBuffer);
-                ofs = useRadius * (((it2 * 2.0f + 1.0f) * 6.0f)) / 768.0f;
+                ofs = sradius * (((it2 * 2.0f + 1.0f) * 6.0f)) / 768.0f;
                 material.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
 
                 lrDepthBuffer = RenderTexture.GetTemporary(rtW, rtH, 0, desc.colorFormat);
                 cmd.Blit(lrColorB, lrDepthBuffer, material, 1);
                 RenderTexture.ReleaseTemporary(lrColorB);
-                ofs = useRadius * (((it2 * 2.0f + 2.0f) * 6.0f)) / 768.0f;
+                ofs = sradius * (((it2 * 2.0f + 2.0f) * 6.0f)) / 768.0f;
                 material.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
             }
 

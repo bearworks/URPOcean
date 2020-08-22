@@ -498,9 +498,11 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float edge = saturate(_ShallowEdge * depth);
 
+	shadow = lerp(1 - _Shadow, 1, shadow);
+
 	shallowColor *= shadow;
 
-	baseColor = lerp(baseColor * lerp(1 - _Shadow, 1, shadow), reflectionColor, fresnelFac );
+	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
 
 #if defined (_PIXELFORCES_ON)
 		float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
