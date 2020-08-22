@@ -29,7 +29,7 @@ namespace NOcean
                     LineRenderer LR = go.GetComponent<LineRenderer>();
                     wl.points = new List<WakePoint>();
                     wl._lineRenderer = LR;
-                    wl.guid = wl.GetHashCode();
+                    wl.guid = GerstnerWavesJobs.GenId();
                     wl.go = go;
                     w.lines.Add(wl);
                     go.hideFlags = HideFlags.HideAndDontSave;

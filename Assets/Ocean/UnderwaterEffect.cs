@@ -25,7 +25,7 @@ namespace NOcean
 
         private void Start()
         {
-			_guid = this.GetInstanceID();
+			_guid = GerstnerWavesJobs.GenId();
 						
             _rend = GetComponent<Renderer>();
 			

@@ -29,7 +29,7 @@ namespace NOcean
             normals = new float3[m_buoyancy.Length];//new NativeSlice<float3>();
             samplePoints = new float3[m_buoyancy.Length];
 
-            _guid = gameObject.GetInstanceID();
+            _guid = GerstnerWavesJobs.GenId();
 
         }
 

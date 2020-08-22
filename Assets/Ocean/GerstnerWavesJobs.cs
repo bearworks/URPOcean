@@ -67,6 +67,12 @@ namespace NOcean
         static JobHandle waterHeightHandle;
         static Dictionary<int, int2> registry = new Dictionary<int, int2>();
 
+        static int maxId = 0;
+        public static int GenId()
+        {
+            return maxId++;
+        }
+
         public static void Init()
         {
             if (init)

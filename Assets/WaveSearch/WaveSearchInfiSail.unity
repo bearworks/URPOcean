@@ -6455,7 +6455,7 @@ MonoBehaviour:
   trailer: {fileID: 1502548117}
   worldsize: 20
   debug: 0
-  stopWhenStay: 0.01
+  stopWhenStay: 0.001
   t: 0.02
   mu: 0.1
   intensity: 0.056

@@ -20,7 +20,7 @@ namespace NOcean
 
         private void Start()
         {
-            _guid = this.GetInstanceID();
+            _guid = GerstnerWavesJobs.GenId();
             module = ps.main;
             offset = transform.localPosition;
         }
