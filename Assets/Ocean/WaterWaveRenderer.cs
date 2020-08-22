@@ -372,18 +372,16 @@ public class WaterWaveRenderer : WaveRenderer
 
             float d = useWorldSize / wavemap.width;
 
-#if UNITY_EDITOR
             c = Mathf.Clamp(c, 0, d * Mathf.Sqrt(mu * t + 2) / (2*t));
             float maxt = (mu + Mathf.Sqrt(mu * mu + 32 * c * c / (d * d))) / (8 * c * c / (d * d));
-            t = Mathf.Clamp(t, 0, maxt);
-#endif
+            float t1 = Mathf.Clamp(t, 0, maxt * 0.99f);
 
             float halfworldsize = useWorldSize * 0.5f;
 
-            float f1 = c * c * t * t / (d * d);
-            float f2 = 1.0F / (mu * t + 2);
+            float f1 = c * c * t1 * t1 / (d * d);
+            float f2 = 1.0F / (mu * t1 + 2);
             float k1 = (4.0F - 8.0F * f1) * f2;
-            float k2 = (mu * t - 2) * f2;
+            float k2 = (mu * t1 - 2) * f2;
             float k3 = 2.0F * f1 * f2;
             matWave.SetVector("_WaveParam", new Vector4(1f / wavemap.width, k1, k2, k3));
             matWave.SetTexture("_WaveTex_Make", trailmap);
