@@ -51,7 +51,7 @@ namespace WaterSystem
         {
             CommandBuffer cmd = CommandBufferPool.Get(k_RenderWaterFXTag);
 
-            using (new ProfilingSample(cmd, k_RenderWaterFXTag))
+            using (new ProfilingScope(cmd, new ProfilingSampler(k_RenderWaterFXTag)))
             {
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();

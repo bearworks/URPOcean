@@ -12,7 +12,6 @@ namespace NOcean
     public class WakeGenerator : MonoBehaviour
     {
         public List<Wake> _wakes = new List<Wake>(); // Wakes to create
-        private List<GameObject> _lrs = new List<GameObject>(); // line renderers
         public GameObject _wakePrefab; // the wake prefab, preset linerenderer
         public float _genDistance = 0.5f; // distance to make new segments
         public float _maxAge = 5f; // how long the wake lasts for
@@ -27,11 +26,11 @@ namespace NOcean
                 {
                     WakeLine wl = new WakeLine();
                     GameObject go = GameObject.Instantiate(_wakePrefab, Vector3.zero, Quaternion.Euler(90f, 0, 0));
-                    _lrs.Add(go);
                     LineRenderer LR = go.GetComponent<LineRenderer>();
                     wl.points = new List<WakePoint>();
                     wl._lineRenderer = LR;
                     wl.guid = wl.GetHashCode();
+                    wl.go = go;
                     w.lines.Add(wl);
                     go.hideFlags = HideFlags.HideAndDontSave;
                 }
@@ -40,11 +39,15 @@ namespace NOcean
 
         void OnDisable()
         {
-            for (int i = _lrs.Count - 1; i >= 0; i--)
+            foreach (Wake w in _wakes)
             {
-                DestroyImmediate(_lrs[i]); // kill wake objects
+                for (int i = 0; i < 2; i++)
+                {
+                    DestroyImmediate(w.lines[i].go); // kill wake objects
+                }
+
+                w.lines.Clear();
             }
-            _lrs.Clear();
         }
 
         void Update()
@@ -194,6 +197,9 @@ namespace NOcean
 
             [System.NonSerialized]
             public int guid;
+
+            [System.NonSerialized]
+            public GameObject go = null;
         }
 
         /// <summary>

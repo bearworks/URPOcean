@@ -147,11 +147,10 @@ float4 _DistortParams; // need float precision
 #define BUMP_SHARPBIAS _DistortParams.w
 #define WORLD_UP half3(0,1,0)
 
-#define FO_TANGENTSPACE \
-	half3x3 m; \
-    m[0] = B; \
-    m[1] = N; \
-    m[2] = T; \
+#if defined (_WATERWAVE_ON)
+sampler2D _WaveTex;
+float4 _WaveCoord;
+#endif
 
 #if defined (_PIXELFORCES_ON)
 
@@ -395,20 +394,46 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, (i.screenPos.xy) / i.screenPos.w);
 	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
 
+	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
+	half3 worldNormal2 = (half3(-slope.x, NORMAL_SHARPBIAS, -slope.y)); //sharp normal
+
 	half k = 0;
 
+#if defined (_WATERWAVE_ON)
+	half2 uv = 1 - (i.bumpCoords.zw - _WaveCoord.xy) * _WaveCoord.zw;
+	half2 ba = tex2D(_WaveTex, uv).rg;
+	ba *= step(0, uv.x);
+	ba *= step(uv.x, 1);
+	ba *= step(0, uv.y);
+	ba *= step(uv.y, 1);
+
+	k = length(ba.xy);
+
+	float3 T0 = (float3(0, ba.x, 1));
+	float3 B0 = (float3(1, ba.y, 0));
+	float3 N0 = (float3(-ba.x, 1, -ba.y));
+
+	half3x3 m0;
+	m0[0] = B0;
+	m0[1] = N0;
+	m0[2] = T0;
+
+	worldNormal = (mul(m0, worldNormal));
+	worldNormal2 = (mul(m0, worldNormal2));
+
+#endif
+
 #ifdef USE_TANGENT
+
 	float3 T = i.tanInterpolator.xyz;
 	float3 B = i.binInterpolator.xyz;
 	float3 N = i.normalInterpolator.xyz;
 
-	FO_TANGENTSPACE
-#endif
+	half3x3 m;
+	m[0] = B;
+	m[1] = N;
+	m[2] = T;
 
-	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
-	half3 worldNormal2 = (half3(-slope.x, NORMAL_SHARPBIAS, -slope.y)); //sharp normal
-
-#ifdef USE_TANGENT
 	worldNormal = (mul(worldNormal, m));
 	worldNormal2 = (mul(worldNormal2, m));
 #else
@@ -493,7 +518,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w).rgb; //r=thick, g=medium, b=light
 
-	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, waterFX.r * foamMap.r);
+	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r);
 	half shoreDepth = saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.25 + 0.75) * (1 - shoreDepth) * foamMap.b * 2;
 	half peakFoam = i.screenPos.z * foamMap.r * 2;
