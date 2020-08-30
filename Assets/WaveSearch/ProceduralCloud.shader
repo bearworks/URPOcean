@@ -13,6 +13,8 @@ Shader "Skybox/ProceduralCloud" {
 
 			_Exposure("Exposure", Range(0, 8)) = 1.3
 
+			_MaskVolumnTex("Cloud Volumn(2D)", 2D) = "black" {}
+
 			_CloudSpeed("Cloud speed",float) = 2
 			_CloudDensity("Cloud density",range(0,1)) = 0.75
 			_CloudCull("Cloud cull",range(0,1)) = 0.5
@@ -385,6 +387,7 @@ Shader "Skybox/ProceduralCloud" {
 					float _CloudDither;
 					float4 _Color;
 
+#if 0 
 					float hash(float3 p)  // replace this by something better
 					{
 						p = frac(p * 0.3183099 + .1);
@@ -407,6 +410,18 @@ Shader "Skybox/ProceduralCloud" {
 								lerp(hash(i + float3(0, 1, 1)),
 									hash(i + float3(1, 1, 1)), f.x), f.y), f.z);
 					}
+#else
+					sampler2D _MaskVolumnTex;
+
+					inline float nnoise(float3 x) {
+						float3 p = floor(x);
+						float3 f = frac(x);
+						f = f * f * (3.0 - 2.0 * f);
+						float2 uv = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
+						float4 c = tex2Dlod(_MaskVolumnTex, half4((uv + 0.5) * 0.00390625, 0, 0));
+						return lerp(c.g, c.r, f.z);
+					}
+#endif
 
 					float noise(in float3 x)
 					{

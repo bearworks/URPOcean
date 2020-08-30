@@ -485,7 +485,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	{
 		fresnelFac = 1 - fresnelFac;
 
-		dotNV = -dotNV;
+		dotNV = -pow(dotNV, 2) * fade;
 	}
 
 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
@@ -498,10 +498,12 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float edge = saturate(_ShallowEdge * depth);
 
+	baseColor = lerp(shallowColor * refractions, baseColor, edge);
+
 	shadow = lerp(1 - _Shadow, 1, shadow);
 
 	shallowColor *= shadow;
-
+	
 	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
 
 #if defined (_PIXELFORCES_ON)
@@ -523,7 +525,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w).rgb; //r=thick, g=medium, b=light
 
 	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r);
-	half shoreDepth = saturate(_Foam.y * _ShallowEdge * depth * pow(viewVector.y, 2));
+	half shoreDepth = saturate(_Foam.y * pow(_ShallowEdge * viewVector.y * depth, 2));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + shoreDepth * _FoamMask_ST.w) * 0.25 + 0.75) * (1 - shoreDepth) * foamMap.b * 2;
 	half peakFoam = i.screenPos.z * foamMap.r * 2 * shadow;
 
