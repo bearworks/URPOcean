@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 0.221
+    - _AboveDepth: 0.166
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
@@ -52,7 +52,8 @@ Material:
     - _FresnelScale: 0.62
     - _PIXELFORCES: 1
     - _PROJECTED: 1
-    - _ShallowEdge: 0.385
+    - _Shadow: 0.5
+    - _ShallowEdge: 0.3
     - _Shininess: 500
     - _SunIntensity: 5
     - _WaveBump: 0.66
@@ -64,12 +65,13 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.079476684, g: 0.3584906, b: 0.30613968, a: 1}
     - _DistortParams: {r: 0.02, g: 0.03, b: 2.9, a: 1}
-    - _Foam: {r: 1, g: 1, b: 1, a: 1}
+    - _Foam: {r: 5, g: 1, b: 1, a: 0.1}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
-    - _ShallowColor: {r: 0.3443396, g: 0.7127584, b: 1, a: 1}
+    - _ShallowColor: {r: 0.10457456, g: 0.5448649, b: 0.8867924, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}
     - _WaveOffset: {r: 0.5, g: -0.5, b: -0.5, a: 0.5}
+  m_BuildTextureStacks: []
 --- !u!1002 &2100001
 EditorExtensionImpl:
   serializedVersion: 6

@@ -4,13 +4,13 @@ Properties {
 	_ShallowColor ("Shallow color", COLOR)  = ( .10, .4, .43, 1)	
 
 	_DistortParams ("Refract, Reflect, Normal Power, Normal Sharp Bias", Vector) = (0.05 , 0.05, 4.0, 3.0)
-	_AboveDepth ("AboveDepth", Range (0.1, 1)) = 0.3
-	_ShallowEdge ("ShallowEdge", Range (0.01, 1.0)) = 0.12
+	_AboveDepth ("Depth", Range (0.1, 1)) = 0.3
+	_ShallowEdge ("Shallow", Range (0.01, 1.0)) = 0.12
 	_Fresnel("Fresnel", Range(0, 0.5)) = 0.04
 	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
 	_Fade ("Fade", Range (0, 0.03)) = 0.002
 	
-	_FoamMask("Foam Mask ", 2D) = "black" {}
+	_FoamMask("Foam Mask (Tiling & Shore)", 2D) = "black" {}
 	_Foam ("Foam Intensity, Shore, Peak, Distort", Vector) = (1, 1, 1, 0.5)
 
 	_SunIntensity ("SunIntensity", Range (0.0, 10)) = 0.05

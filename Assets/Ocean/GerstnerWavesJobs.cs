@@ -78,6 +78,8 @@ namespace NOcean
             if (init)
                 return;
 
+            maxId = 0;
+
             //Wave data
             _waveCount = NeoOcean.instance._waves.Length;
             waveData = new NativeArray<Wave>(_waveCount, Allocator.Persistent);
@@ -109,6 +111,8 @@ namespace NOcean
             waveNormal.Dispose();
 
             init = false;
+
+            maxId = 0;
         }
 
         public static void UpdateSamplePoints(float3[] samplePoints, int guid)
@@ -120,7 +124,16 @@ namespace NOcean
             int2 offsets;
             if (registry.TryGetValue(guid, out offsets))
             {
-                for (var i = offsets.x; i < offsets.y; i++) positions[i] = samplePoints[i - offsets.x];
+                for (var i = offsets.x; i < offsets.y; i++)
+                {
+                    var id = i - offsets.x;
+                    if (id >= samplePoints.Length)
+                    {
+                        continue;
+                    }
+
+                    positions[i] = samplePoints[id];
+                }
             }
             else
             {
@@ -155,7 +168,9 @@ namespace NOcean
             var offsets = new int2(0, 0);
             if (registry.TryGetValue(guid, out offsets))
             {
-                wavePos.Slice(offsets.x, offsets.y - offsets.x).CopyTo(outPos);
+                NativeSlice<float3> ws = wavePos.Slice(offsets.x, offsets.y - offsets.x);
+                if (ws.Length == outPos.Length)
+                    ws.CopyTo(outPos);
             }
         }
 

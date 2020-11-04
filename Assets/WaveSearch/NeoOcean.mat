@@ -143,7 +143,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 0.537
+    - _AboveDepth: 1
     - _Ambient: 1
     - _Displacement: 0.27863377
     - _DisplacementTiling: 18.586807
@@ -170,8 +170,8 @@ Material:
     - _ReflDistort: 0.9267696
     - _RefrDistort: 1.4393286
     - _SatScale: 1.5
-    - _Shadow: 0.35
-    - _ShallowEdge: 0.339
+    - _Shadow: 0.5
+    - _ShallowEdge: 0.874
     - _Shininess: 350
     - _ShoreBlend: 8
     - _ShoreEdge: 8
@@ -238,6 +238,7 @@ Material:
     - t_corners1: {r: 1.2643113, g: -0.2808571, b: -0.32359338, a: 0.02808553}
     - t_corners2: {r: -1.2643113, g: -0.001285553, b: 1.2880307, a: 0.00012886524}
     - t_corners3: {r: 1.2643113, g: -0.001285553, b: 1.2880307, a: 0.00012886524}
+  m_BuildTextureStacks: []
 --- !u!1002 &2100001
 EditorExtensionImpl:
   serializedVersion: 6
