@@ -12,7 +12,7 @@ Material:
   m_ShaderKeywords: NEOOCEAN_ALPHABLEND_ON NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON
     NEOOCEAN_FOAM_ON NEOOCEAN_FOG_OFF NEOOCEAN_GERSTNER_ON NEOOCEAN_PHONG_ON NEOOCEAN_PROJECTED_ON
     NEOOCEAN_REFLECTION_ON NEOOCEAN_SPHERICALPG_OFF NEOOCEAN_TRAIL_OFF _PIXELFORCES_ON
-    _PROJECTED_ON
+    _POINTFORCES_ON _PROJECTED_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -156,7 +156,7 @@ Material:
     - _FadeIntensity: 256
     - _FoamWaveDependency: 0.10205479
     - _Fog: 0.018
-    - _Fresnel: 0.04
+    - _Fresnel: 0.065
     - _FresnelPower: 1.7931035
     - _FresnelScale: 0.74
     - _GerstnerIntensity: 1
@@ -166,18 +166,19 @@ Material:
     - _InvFadeFoam: 0.1217
     - _NormalsDisplacement: 0
     - _PIXELFORCES: 1
+    - _POINTFORCES: 0
     - _PROJECTED: 0
     - _ReflDistort: 0.9267696
     - _RefrDistort: 1.4393286
     - _SatScale: 1.5
     - _Shadow: 0.5
     - _ShallowEdge: 0.874
-    - _Shininess: 350
+    - _Shininess: 349
     - _ShoreBlend: 8
     - _ShoreEdge: 8
     - _ShoreTiling: 56.862743
     - _Speed: 0.4137931
-    - _SunIntensity: 1
+    - _SunIntensity: 0.28
     - _TrailDistort: 10
     - _TrailIntensity: 1.5
     - _UnderDepth: 0.78
@@ -200,10 +201,11 @@ Material:
     - _DepthColorFade: {r: 0.8880597, g: 0.27834705, b: 0.44463244, a: 0.22352941}
     - _Displacement: {r: 6.6371665, g: 20.353983, b: -1, a: -0.681416}
     - _DisplacementXz: {r: 0.6499999, g: -2.9203715, b: 1.6599998, a: -3.9363046}
-    - _DistortParams: {r: 0.01, g: 0.3, b: 6.71, a: 2.3}
+    - _DistortParams: {r: 0.01, g: 0.3, b: 6.71, a: 6}
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
-    - _Foam: {r: 1.4, g: 2, b: 1.3, a: 0.13}
+    - _Foam: {r: 1, g: 1.07, b: 0.25, a: 0.13}
+    - _FoamPeak: {r: 2.15, g: 1, b: 1.71, a: 15}
     - _FoamTiling: {r: 0.03, g: 0.003, b: 0.001, a: 0.001}
     - _FoamWaveParams: {r: 0, g: 0.24918434, b: 3.3395782, a: 1}
     - _Fresnel_ST: {r: 1, g: 1, b: 0, a: 0}
@@ -224,7 +226,7 @@ Material:
     - _RefrColorDepth: {r: 0.050066825, g: 0.23134327, b: 0.17049524, a: 1}
     - _RefractionFog: {r: 0.50543475, g: 0.50543475, b: 0.50543475, a: 0.5}
     - _RefractionTex_ST: {r: 1, g: 1, b: 0, a: 0}
-    - _ShallowColor: {r: 0.16233535, g: 0.54588014, b: 0.6037736, a: 1}
+    - _ShallowColor: {r: 0.23552941, g: 0.6039216, b: 0.60112005, a: 1}
     - _ShoreColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShorePerturbation: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreTiling: {r: 1, g: 1, b: 0.1, a: 0.1}

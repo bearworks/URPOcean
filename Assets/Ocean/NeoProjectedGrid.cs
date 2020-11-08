@@ -36,18 +36,6 @@ namespace NOcean
             GetComponent<Renderer>().sharedMaterial = oceanMaterial;
             GetComponent<Renderer>().enabled = true;
 
-            m_fftresolution = (int)GetFFTResolution();
-
-            m_worldfftSize = fftParam.worldfftSize;
-
-            m_windSpeed = fftParam.windSpeed;
-
-            m_waveAmp = fftParam.waveAmp;
-            //m_Omega = fftParam.Omega;
-            m_waveDirFlow = uniWaveDirFlow;
-
-            m_inverseWorldSizes = INVERSEV(fftParam.worldfftSize);
-
             GameObject go = new GameObject();
             projectorCamera = go.AddComponent<Camera>();
             projectorCamera.transform.parent = this.transform.parent.transform;
@@ -55,8 +43,6 @@ namespace NOcean
             projectorCamera.cullingMask = 0;
             projectorCamera.targetTexture = null;
             go.hideFlags = HideFlags.HideAndDontSave;
-
-            GenBuffer();
 
             GenMesh();
 
@@ -203,57 +189,10 @@ namespace NOcean
                 DestroyImmediate(meshFilter.sharedMesh);
             }
 
-            RelBuffer();
-
             GetComponent<Renderer>().enabled = false;
 
             if (NeoOcean.instance != null)
                 NeoOcean.instance.RemovePG(this);
-
-        }
-
-        public override void CheckParams()
-        {
-            if (NeoOcean.instance == null)
-                return;
-
-            int fftsize = (int)GetFFTResolution();
-            if (m_fftresolution != fftsize)
-            {
-                m_fftresolution = fftsize;
-                ForceReload(true);
-                return;
-            }
-
-            if (m_worldfftSize != fftParam.worldfftSize)
-            {
-                fftParam.worldfftSize = Mathf.Max(1f, fftParam.worldfftSize);
-                m_inverseWorldSizes = INVERSEV(fftParam.worldfftSize);
-                m_worldfftSize = fftParam.worldfftSize;
-
-                ForceReload(false);
-                return;
-            }
-
-            if (m_windSpeed != fftParam.windSpeed)
-            {
-                m_windSpeed = fftParam.windSpeed;
-                ForceReload(false);
-            }
-            else if (m_waveAmp != fftParam.waveAmp)
-            {
-                m_waveAmp = fftParam.waveAmp;
-                ForceReload(false);
-            }
-            else if (m_gridsize != usedGridSize)
-            {
-                GenMesh();
-            }
-            else if (m_waveDirFlow != uniWaveDirFlow)
-            {
-                m_waveDirFlow = uniWaveDirFlow;
-                ForceReload(false);
-            }
 
         }
 
@@ -263,33 +202,6 @@ namespace NOcean
                 return;
 
             NeoOcean.oceanheight = usedOceanHeight;
-
-#if UNITY_EDITOR
-            NeoOcean.instance.AddPG(this);
-#endif
-            if (m_queueNode != null)
-            {
-                if (m_queueNode.Value != null && !m_queueNode.Value.IsCreated())
-                {
-                    if (Application.isPlaying)
-                        ForceReload(true);
-
-                    m_queueNode = null;
-                    return;
-                }
-
-                m_queueNode = m_queueNode.Next;
-            }
-            else
-                m_queueNode = m_queueRTs.First;
-
-
-            //float pTimeA = twoPI / Dispersion(twoPI * m_inverseWorldSizes.y);
-            //use ωt' = ωt - (int)(ωt/(2pi)) * 2pi to wrap the period of sin waves,
-            //solve the common measure period of fft waves
-            _ScaledTime = Mathf.PingPong(Time.time * uniWaveSpeed, 1e4f);
-
-            PhysicsUpdate();
 
             basePlane = new Plane(Vector3.up, usedOceanHeight * Vector3.up);
         }

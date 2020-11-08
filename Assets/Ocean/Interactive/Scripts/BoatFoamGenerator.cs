@@ -40,7 +40,10 @@ namespace NOcean
             var fwd = boatTransform.forward;
             fwd.y = 0;
             var angle = Vector3.Angle(fwd.normalized, Vector3.forward);
-            module.startRotation = angle * Mathf.Deg2Rad;
+            if(ps != null)
+               module.startRotation = angle * Mathf.Deg2Rad;
         }
+
+
     }
 }

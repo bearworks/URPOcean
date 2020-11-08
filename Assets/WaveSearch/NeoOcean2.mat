@@ -13,7 +13,7 @@ Material:
     NEOOCEAN_DEPTHBLEND_ON NEOOCEAN_FOAM_MASK_ON NEOOCEAN_FOAM_ON NEOOCEAN_FOG_ON
     NEOOCEAN_GERSTNER_OFF NEOOCEAN_PHONG_OFF NEOOCEAN_PHONG_ON NEOOCEAN_PROJECTED_OFF
     NEOOCEAN_REFLECTION_ON NEOOCEAN_SPHERICALPG_OFF NEOOCEAN_TRAILSCREEN_OFF NEOOCEAN_TRAIL_OFF
-    _FOGFORCE_ON _PIXELFORCES_ON _PROJECTED_ON
+    _FOGFORCE_ON _PIXELFORCES_ON _POINTFORCES_ON _PROJECTED_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -44,18 +44,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 0.166
+    - _AboveDepth: 0.783
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
     - _Fresnel: 0.04
     - _FresnelScale: 0.62
     - _PIXELFORCES: 1
+    - _POINTFORCES: 0
     - _PROJECTED: 1
     - _Shadow: 0.5
     - _ShallowEdge: 0.3
     - _Shininess: 500
-    - _SunIntensity: 5
+    - _SunIntensity: 0.36
     - _WaveBump: 0.66
     - _WaveFreq: 3
     - _WaveHeight: 1
@@ -65,8 +66,9 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.079476684, g: 0.3584906, b: 0.30613968, a: 1}
     - _DistortParams: {r: 0.02, g: 0.03, b: 2.9, a: 1}
-    - _Foam: {r: 5, g: 1, b: 1, a: 0.1}
+    - _Foam: {r: 1, g: 0.5, b: 0.25, a: 0.1}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
+    - _FoamPeak: {r: 0.5, g: 4.56, b: 50, a: 2.02}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
     - _ShallowColor: {r: 0.10457456, g: 0.5448649, b: 0.8867924, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}

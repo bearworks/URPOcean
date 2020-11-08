@@ -34,6 +34,9 @@ namespace UnityEngine.Rendering.Universal
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            if (!Application.isPlaying)
+                return;
+
             m_CopyDepthPass.Setup(m_CameraDepthAttachment, m_DepthTexture);
             renderer.EnqueuePass(m_CopyDepthPass);
 

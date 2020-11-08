@@ -123,13 +123,13 @@ half _Shadow;
 
 // edge & shore fading
 half _AboveDepth;
-half _ShallowEdge;	
+float4 _FoamPeak;
 float _Fade;
 
 // specularity
 float _Shininess;
 half _SunIntensity;
-#if defined (_PIXELFORCES_ON)
+#if defined (_POINTFORCES_ON)
 half4 _WorldLightPos;
 #else
 half4 _WorldLightDir;
@@ -153,7 +153,7 @@ sampler2D _WaveTex;
 float4 _WaveCoord;
 #endif
 
-#if defined (_PIXELFORCES_ON)
+#if defined (_POINTFORCES_ON)
 
 inline float NeoGGXTerm(float NdotH, float roughness)
 {
@@ -343,7 +343,7 @@ v2f_MQ vert_MQ(appdata_base vert)
 
 	o.screenPos = ComputeScreenPos(o.pos);
 
-	o.screenPos.z = pow(saturate(wave.position.y), _Foam.z);
+	o.screenPos.z = lerp(saturate(_FoamPeak.y * wave.position.y), exp2((wave.position.y - length(wave.position.xz) * _FoamPeak.w) * _FoamPeak.z), _FoamPeak.x);
 
 	float2 tileableUv = worldSpaceVertex.xz;
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;
@@ -359,27 +359,6 @@ bool IsUnderwater(const float facing)
 {
 	const bool backface = facing < 0.0;
 	return backface;
-}
-
-
-float Jacobi(float2 uv)
-{
-	// sample displacement texture and generate foam from it
-    float3 dd = float3(_Map0_TexelSize.x, 0.0, _Map0_TexelSize.y);
-	half3 s = tex2D(_Map0, uv).xyz;
-	half3 sx = tex2D(_Map0, uv + dd.xy).xyz;
-	half3 sz = tex2D(_Map0, uv + dd.yx).xyz;
-	float3 disp = s.xyz;
-	float3 disp_x = dd.zyy + sx.xyz;
-	float3 disp_z = dd.yyz + sz.xyz;
-	// The determinant of the displacement Jacobian is a good measure for turbulence:
-	// > 1: Stretch
-	// < 1: Squash
-	// < 0: Overlap
-	float4 du = float4(disp_x.xz, disp_z.xz) - disp.xzxz;
-	float det = (du.x * du.w - du.y * du.z) / (_Map0_TexelSize.x * _Map0_TexelSize.x);
-
-	return saturate(1 - det);
 }
 
 half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
@@ -496,11 +475,11 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
-	float edge = exp(-_ShallowEdge * depth) ;
+	float edge = saturate(exp2(-_AboveDepth * depth));
 
 	baseColor = lerp(baseColor, refractions * shallowColor, edge);
 
-#if defined (_PIXELFORCES_ON)
+#if defined (_POINTFORCES_ON)
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
 	float spec = GGXSpecularDir(viewVector, worldNormal2, Dir);
 #else
@@ -510,28 +489,28 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	// to get an effect when you see through the material
 	// hard coded pow constant
-	float InScatter = pow(abs(dot(viewVector, normalize(worldNormal + Dir))), 2) * lerp(.1f, 3, edge);
+	float phase = abs(dot(viewVector, normalize(worldNormal + Dir)));
+	float InScatter = pow(phase, 2) * lerp(.1f, 3, edge);
 	baseColor += InScatter * shallowColor;
 
 	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
 
-	float alpha = saturate(exp(-_AboveDepth * depth) * _BaseColor.a) ;
+	baseColor += _SpecularColor * spec * lerp(fade, shadow, 0.5) / max(edge, 0.1);
 
-	baseColor += spec * lerp(_SpecularColor * fade, shadow, 0.5) / max(alpha, 0.1);
-
-	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w).rgb; //r=thick, g=medium, b=light
+	half height = i.screenPos.z;
+	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb; //r=thick, g=medium, b=light
 
 	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r);
-	half shoreDepth = saturate(_Foam.y * pow(viewVector.y * depth, 2));
-	float maxInt = max(1 - shoreDepth, i.screenPos.z);
-	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + maxInt * _FoamMask_ST.w) * 0.25 + 0.75) * saturate(maxInt) * foamMap.b * 2;
-	half peakFoam = i.screenPos.z * foamMap.r * shadow * 2;
+	half shoreDepth = exp2(-_Foam.y * viewVector.y * depth);
+	float maxInt = saturate(max(shoreDepth, height));
+	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + maxInt * _FoamMask_ST.w) * _Foam.z + 1) * maxInt * foamMap.b;
+	half peakFoam = height * foamMap.r * shadow * phase;
 
-    baseColor += max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x * fade;
+    baseColor += min(max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x * fade, 2);
 
 	baseColor.rgb = MixFog(baseColor.rgb, i.worldPos.w);
 
-	baseColor = lerp(baseColor, refractions, alpha);
+	baseColor = lerp(baseColor, refractions, edge);
 
 	return half4(clamp(baseColor.rgb, 0, MaxLitValue), 1);
 }

@@ -14,10 +14,8 @@ namespace NOcean
 {
     public enum eFFTResolution
     {
-       // eFFT_NeoSmall = 16,
         eFFT_NeoLow = 64,
         eFFT_NeoMedium = 128,
-      //  eFFT_NeoLarge = 128,
     }
 
     public enum eRWQuality
@@ -33,6 +31,25 @@ namespace NOcean
        // public bool useDepth = true;
         public Light sunLight;
 	}
+
+    [Serializable]
+    public class NeoFFTParameters
+    {
+        public eFFTResolution fftresolution = eFFTResolution.eFFT_NeoMedium;
+
+        public float worldSize = 20;
+        [Range(1, 10)]
+        public float windSpeed = 8.0f; //A higher wind speed gives greater swell to the waves
+        [Range(0.01f, 10)]
+        public float waveAmp = 1.0f; //Scales the height of the waves
+        [Range(0.01f, 1)]
+        public const float Omega = 0.84f;//A lower number means the waves last longer and will build up larger waves
+
+        [Range(0, 1)]
+        public float waveFlow = 0.7f;
+
+        public Vector2 distort = Vector2.one;//A lower number means the waves last longer and will build up larger waves
+    }
 
     [Serializable]
     public class NeoShaderPack
@@ -56,6 +73,47 @@ namespace NOcean
         private float wavelength = 2f;
 
         public BasicWaves basicWaves;
+
+        public NeoFFTParameters detailWaves = null;
+
+        [Range(0.1f, 10)]
+        public float uniWaveSpeed = 1.0f; //Scales the speed of all waves
+
+        private bool usemips = true;
+        /// <summary>
+        /// fft
+        /// </summary>
+        private int m_fftresolution = 128;
+        private int m_anisoLevel = 2;
+        private float m_offset;
+        private float m_worldfftSize = 20;
+        private Vector2 m_inverseWorldSizes;
+        //private float m_choppiness = 1.6f;
+        private float m_windSpeed = 8.0f;
+        //private float m_waveAngle = 90f;
+        private float m_waveAmp = 1.0f;
+        //float m_Omega = 0.84f;
+        private float m_waveDirFlow = 0.0f;
+
+        const float twoPI = 2f * Mathf.PI;
+
+        private RenderTexture m_spectrum01;
+        private RenderTexture[] m_fourierBuffer0;
+        private RenderTexture m_map0;
+
+        private LinkedListNode<RenderTexture> m_queueNode = null;
+        private LinkedList<RenderTexture> m_queueRTs = new LinkedList<RenderTexture>();
+
+        const float WAVE_KM = 370.0f;
+        const float WAVE_CM = 0.23f;
+
+        float Sqr(float x) { return x * x; }
+
+        //Gravity Wave Dispersion Relations
+        //http://graphics.ucsd.edu/courses/rendering/2005/jdewall/tessendorf.pdf
+        //ω^2(k) = gk(1 + k^2 * L^2)
+        float Dispersion(float k) { return Mathf.Sqrt(9.80665f * k * (1.0f + Sqr(k / WAVE_KM))); }
+
 
         [NonSerialized]
         public Wave[] _waves;
@@ -99,6 +157,56 @@ namespace NOcean
             return instance == this;
 	    }
 
+        private eFFTResolution GetFFTResolution()
+        {
+            return detailWaves.fftresolution;
+        }
+
+        private void RelBuffer()
+        {
+            RenderTexture.active = null;
+
+            if (m_map0 != null)
+                m_map0.Release();
+
+            if (m_spectrum01 != null)
+                m_spectrum01.Release();
+
+            DestroyImmediate(m_map0);
+
+            m_map0 = null;
+
+            DestroyImmediate(m_spectrum01);
+
+            m_spectrum01 = null;
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (m_fourierBuffer0 != null && i < m_fourierBuffer0.Length && m_fourierBuffer0[i] != null)
+                {
+                    m_fourierBuffer0[i].Release();
+                    DestroyImmediate(m_fourierBuffer0[i]);
+                }
+
+            }
+
+            m_fourierBuffer0 = null;
+
+
+            if (m_butterflyLookupTable != null)
+            {
+                for (int i = 0; i < m_butterflyLookupTable.Length; i++)
+                {
+                    Texture2D tex = m_butterflyLookupTable[i];
+                    DestroyImmediate(tex);
+                }
+                m_butterflyLookupTable = null;
+            }
+
+            m_queueRTs.Clear();
+        }
+
+
         Material CreateMaterial(ref Shader shader, string shaderName)
         {
             Material newMat = null;
@@ -135,6 +243,253 @@ namespace NOcean
             DestroyMaterial(ref matIspectrum);
         }
 
+        int m_passes;
+        private Texture2D[] m_butterflyLookupTable = null;
+
+        private void GenBuffer()
+        {
+            m_queueRTs.Clear();
+
+            if (!supportRT)
+                return;
+
+            RenderTextureFormat mapFormat = RenderTextureFormat.ARGBHalf;
+
+            m_passes = (int)(Mathf.Log(m_fftresolution) / Mathf.Log(2.0f));
+            m_butterflyLookupTable = new Texture2D[m_passes];
+
+            m_map0 = new RenderTexture(m_fftresolution, m_fftresolution, 0, mapFormat, QualitySettings.activeColorSpace == ColorSpace.Linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
+            m_map0.filterMode = FilterMode.Trilinear;
+            m_map0.wrapMode = TextureWrapMode.Repeat;
+            m_map0.anisoLevel = m_anisoLevel;
+            m_map0.autoGenerateMips = usemips;
+            //m_map0.useMipMap = usemips; //bug on Some cards
+            m_map0.hideFlags = HideFlags.DontSave;
+            m_map0.Create();
+            m_map0.DiscardContents();
+
+            m_queueRTs.AddLast(m_map0);
+
+            //These textures hold the specturm the fourier transform is performed on
+            m_spectrum01 = new RenderTexture(m_fftresolution, m_fftresolution, 0, mapFormat, QualitySettings.activeColorSpace == ColorSpace.Linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
+            m_spectrum01.filterMode = FilterMode.Point;
+            m_spectrum01.wrapMode = TextureWrapMode.Repeat;
+            m_spectrum01.useMipMap = false;
+            m_spectrum01.Create();
+            m_spectrum01.DiscardContents();
+            m_spectrum01.hideFlags = HideFlags.DontSave;
+            m_queueRTs.AddLast(m_spectrum01);
+
+            //These textures are used to perform the fourier transform
+            m_fourierBuffer0 = new RenderTexture[2];
+
+            CreateBuffer(m_fourierBuffer0, mapFormat);
+
+            ComputeButterflyLookupTable();
+
+            m_offset = 0.5f / m_fftresolution;
+
+            bChangeBuffer = true;
+        }
+
+        void GenerateWavesSpectrum()
+        {
+            matIspectrum.SetFloat("Omega", NeoFFTParameters.Omega);
+            matIspectrum.SetFloat("windSpeed", detailWaves.windSpeed);
+            matIspectrum.SetFloat("waveDirFlow", detailWaves.waveFlow);
+            matIspectrum.SetFloat("waveAngle", basicWaves.direction);
+            matIspectrum.SetFloat("waveAmp", detailWaves.waveAmp);
+            matIspectrum.SetFloat("fftresolution", m_fftresolution);
+
+            Vector2 twoInvSizes = twoPI * m_inverseWorldSizes;
+            Vector4 sampleFFTSize = new Vector4(twoInvSizes.y, twoInvSizes.x, twoInvSizes.y, twoInvSizes.y);
+            matIspectrum.SetVector("sampleFFTSize", sampleFFTSize);
+
+            Blit(null, m_spectrum01, matIspectrum);
+        }
+
+        public bool debug = false;
+
+#if UNITY_EDITOR
+        public void OnGUI()
+        {
+            if (debug)
+            {
+                if (m_map0 != null)
+                    GUI.DrawTexture(new Rect(0, 0, m_map0.width * 2, m_map0.height * 2), m_map0, ScaleMode.ScaleToFit, false);
+
+            }
+        }
+#endif
+
+        void InitWaveSpectrum(float t)
+        {
+            float factor = twoPI * m_fftresolution;
+            matSpectrum_l.SetTexture("_Spectrum01", m_spectrum01);
+            matSpectrum_l.SetVector("_Offset", m_offset * detailWaves.distort);
+            matSpectrum_l.SetVector("_InverseGridSizes", m_inverseWorldSizes * factor);
+            matSpectrum_l.SetFloat("_T", t);
+
+            NeoOcean.Blit(null, m_fourierBuffer0[1], matSpectrum_l, 0);
+        }
+
+        void CreateBuffer(RenderTexture[] tex, RenderTextureFormat format)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (tex[i] != null)
+                {
+                    continue;
+                }
+
+                tex[i] = new RenderTexture(m_fftresolution, m_fftresolution, 0, format, QualitySettings.activeColorSpace == ColorSpace.Linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
+                tex[i].filterMode = FilterMode.Point;
+                tex[i].wrapMode = TextureWrapMode.Repeat;
+                tex[i].useMipMap = false;
+                tex[i].hideFlags = HideFlags.DontSave;
+                tex[i].Create();
+                tex[i].DiscardContents();
+                m_queueRTs.AddLast(tex[i]);
+            }
+        }
+
+        int BitReverse(int n)
+        {
+            int nrev = n;  // nrev will store the bit-reversed pattern
+            for (int i = 1; i < m_passes; i++)
+            {
+                n >>= 1; //push
+                nrev <<= 1; //pop
+                nrev |= n & 1;   //set last bit
+            }
+            nrev &= (1 << m_passes) - 1;         // clear all bits more significant than N-1
+
+            return nrev;
+        }
+
+        //TextureFormat.ARGB32 -> m_fftresolution < 256
+        Texture2D Make1DTex()
+        {
+            Texture2D tex1D = new Texture2D(m_fftresolution, 1, TextureFormat.ARGB32, false, QualitySettings.activeColorSpace == ColorSpace.Linear);
+            tex1D.filterMode = FilterMode.Point;
+            tex1D.wrapMode = TextureWrapMode.Clamp;
+            tex1D.hideFlags = HideFlags.DontSave;
+            return tex1D;
+        }
+
+        void ComputeButterflyLookupTable()
+        {
+            for (int i = 0; i < m_passes; i++)
+            {
+                int nBlocks = (int)Mathf.Pow(2, m_passes - 1 - i);
+                int nHInputs = (int)Mathf.Pow(2, i);
+                int nInputs = nHInputs << 1;
+
+                m_butterflyLookupTable[i] = Make1DTex();
+
+                for (int j = 0; j < nBlocks; j++)
+                {
+                    for (int k = 0; k < nHInputs; k++)
+                    {
+                        int i1, i2, j1, j2;
+
+                        i1 = j * nInputs + k;
+                        i2 = i1 + nHInputs;
+
+                        if (i == 0)
+                        {
+                            j1 = BitReverse(i1);
+                            j2 = BitReverse(i2);
+                        }
+                        else
+                        {
+                            j1 = i1;
+                            j2 = i2;
+                        }
+
+                        float weight = (float)(k * nBlocks) / (float)m_fftresolution;
+                        //coordinates of the Raster renderbuffer result -0.5 texel, so need shift half texel to sample
+                        float uva = ((float)j1 + 0.5f) / m_fftresolution;
+                        float uvb = ((float)j2 + 0.5f) / m_fftresolution;
+
+                        m_butterflyLookupTable[i].SetPixel(i1, 0, new Color(uva, uvb, weight, 1));
+                        m_butterflyLookupTable[i].SetPixel(i2, 0, new Color(uva, uvb, weight, 0));
+
+                    }
+                }
+
+                m_butterflyLookupTable[i].Apply();
+            }
+        }
+
+
+        int pj = 0;
+
+        void PeformFFT(RenderTexture[] data0, int c)
+        {
+            Material fouriermat = matFourier_l;
+
+            RenderTexture pass0 = data0[0];
+            RenderTexture pass1 = data0[1];
+
+            if (c == 0)
+            {
+                pj = 0;
+
+                for (int i = 0; i < m_passes; i++, pj++)
+                {
+                    int idx = pj % 2;
+                    int idx1 = (pj + 1) % 2;
+
+                    fouriermat.SetTexture("_ButterFlyLookUp", m_butterflyLookupTable[i]);
+
+                    fouriermat.SetTexture("_ReadBuffer0", data0[idx1]);
+
+                    if (idx == 0)
+                        NeoOcean.Blit(null, pass0, fouriermat, 0);
+                    else
+                        NeoOcean.Blit(null, pass1, fouriermat, 0);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < m_passes; i++, pj++)
+                {
+                    int idx = pj % 2;
+                    int idx1 = (pj + 1) % 2;
+
+                    fouriermat.SetTexture("_ButterFlyLookUp", m_butterflyLookupTable[i]);
+
+                    fouriermat.SetTexture("_ReadBuffer0", data0[idx1]);
+
+                    if (idx == 0)
+                        NeoOcean.Blit(null, pass0, fouriermat, 1);
+                    else
+                        NeoOcean.Blit(null, pass1, fouriermat, 1);
+                }
+            }
+        }
+
+
+        private Vector2 INVERSEV(float V)
+        {
+            const float goldenNum = 2 * 1.61803398875f;
+            return new Vector2(1f / (V * goldenNum), 1f / V);
+        }
+
+        public void ForceReload(bool bReGen)
+        {
+            if (bReGen)
+            {
+                RelBuffer();
+                GenBuffer();
+            }
+
+            bChangeBuffer = true;
+        }
+
+        bool bChangeBuffer = false;
+
         public void CheckRT()
         {
             supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) && 
@@ -164,6 +519,20 @@ namespace NOcean
 	    {
             CheckInstance(true);
             SetupWaves();
+
+            m_fftresolution = (int)GetFFTResolution();
+
+            m_worldfftSize = detailWaves.worldSize;
+
+            m_windSpeed = detailWaves.windSpeed;
+
+            m_waveAmp = detailWaves.waveAmp;
+            //m_Omega = fftParam.Omega;
+            m_waveDirFlow = detailWaves.waveFlow;
+
+            m_inverseWorldSizes = INVERSEV(detailWaves.worldSize);
+
+            GenBuffer();
         }
 
         void OnEnable()
@@ -203,6 +572,46 @@ namespace NOcean
             {
                 SetupWaves();
             }
+
+            int fftsize = (int)GetFFTResolution();
+            if (m_fftresolution != fftsize)
+            {
+                m_fftresolution = fftsize;
+                ForceReload(true);
+                return;
+            }
+
+            if (m_worldfftSize != detailWaves.worldSize)
+            {
+                detailWaves.worldSize = Mathf.Max(1f, detailWaves.worldSize);
+                m_inverseWorldSizes = INVERSEV(detailWaves.worldSize);
+                m_worldfftSize = detailWaves.worldSize;
+
+                ForceReload(false);
+                return;
+            }
+
+            if (m_windSpeed != detailWaves.windSpeed)
+            {
+                m_windSpeed = detailWaves.windSpeed;
+                ForceReload(false);
+            }
+            else if (m_waveAmp != detailWaves.waveAmp)
+            {
+                m_waveAmp = detailWaves.waveAmp;
+                ForceReload(false);
+            }
+            //else if (m_Omega != fftParam.Omega)
+            //{
+            //    fftParam.Omega = Mathf.Clamp01(fftParam.Omega);
+            //    m_Omega = fftParam.Omega;
+            //    ForceReload(false);
+            //}
+            else if (m_waveDirFlow != detailWaves.waveFlow)
+            {
+                m_waveDirFlow = detailWaves.waveFlow;
+                ForceReload(false);
+            }
         }
 
         public static float oceanheight = 0;
@@ -229,17 +638,8 @@ namespace NOcean
                  _e.Current.enabled = _e.Current.gameObject.activeSelf;
             }
 
-            Camera cam = Camera.main;
-
-            if (cam == null)
-	            return;
-
-            if (!cam.gameObject.activeSelf)
-                return;
-
-            gTime += Mathf.Min(Time.smoothDeltaTime, 1f);
-            float rTime = (float)(gTime / 20f);
-            Shader.SetGlobalFloat("_NeoGlobalTime", rTime - 4f);
+            gTime += Mathf.Min(Time.smoothDeltaTime, 1f) * uniWaveSpeed;
+            gTime = Mathf.PingPong(gTime, 1e4f);
 
             CheckParams();
 
@@ -260,15 +660,69 @@ namespace NOcean
             var _e = grids.GetEnumerator();
             while (_e.MoveNext())
             {
-                _e.Current.SetupMaterial();
+                float scale = (0.5f * detailWaves.worldSize);
+
+                _e.Current.SetupMaterial(m_map0, scale);
             }
+
+            if (m_queueNode != null)
+            {
+                if (m_queueNode.Value != null && !m_queueNode.Value.IsCreated())
+                {
+                    if (Application.isPlaying)
+                        ForceReload(true);
+
+                    m_queueNode = null;
+                    return;
+                }
+
+                m_queueNode = m_queueNode.Next;
+            }
+            else
+                m_queueNode = m_queueRTs.First;
+
+            PhysicsUpdate();
         }
 
-        public float UpdateCameraPlane(NeoNormalGrid pgrid, float fAdd)
+        protected void PhysicsUpdate()
         {
-            Camera cam = Camera.main;
+            CheckParams();
 
-            return Mathf.Max(cam.nearClipPlane, cam.farClipPlane + fAdd);
+            if (matSpectrum_l == null)
+                return;
+
+            if (bChangeBuffer)
+            {
+
+                //Creates all the data needed to generate the waves.
+                //This is not called in the constructor because greater control
+                //over when exactly this data is created is needed.
+                GenerateWavesSpectrum();
+
+                matSpectrum_l.SetTexture("_Spectrum01", m_spectrum01);
+
+                bChangeBuffer = false;
+            }
+
+            if (m_fourierBuffer0.Length == 0)
+            {
+                ForceReload(true);
+                return;
+            }
+
+            int count = 2;
+            count = Time.frameCount % count;
+            if (count == 0)
+            {
+                InitWaveSpectrum(gTime);
+            }
+
+            PeformFFT(m_fourierBuffer0, count);
+
+            if (count == 1)
+            {
+                NeoOcean.Blit(m_fourierBuffer0[1], m_map0, null);
+            }
         }
 
         public void SetupWaves()
@@ -308,11 +762,10 @@ namespace NOcean
 
         private void UpdateMainGrid()
 	    {
-			if (!mainPGrid.oceanMaterial)
+			if (!mainPGrid)
                 return;
 
-            //Physics.gravity = -Vector3.up * g;
-            UpdateMaterial(mainPGrid, mainPGrid.oceanMaterial, true);
+            UpdateMaterial(mainPGrid.oceanMaterial);
 
             //GPU side
             Shader.SetGlobalVectorArray("waveData", GetWaveData());
@@ -324,19 +777,25 @@ namespace NOcean
             CheckDepth(mainPGrid);
 	    }
 
-	    public void UpdateMaterial(NeoNormalGrid pgrid, Material mat, bool main)
+	    public void UpdateMaterial(Material mat)
 	    {
             if (mat == null)
                 return;
 
             if (envParam.sunLight != null)
 	        {
-                if(mat.IsKeywordEnabled("_PIXELFORCES_ON"))
-                   mat.SetVector("_WorldLightPos", envParam.sunLight.transform.position);
+                if (envParam.sunLight.type == LightType.Point)
+                {
+                    mat.SetVector("_WorldLightPos", envParam.sunLight.transform.position);
+                    mat.EnableKeyword("_POINTFORCES_ON");
+                }
                 else
-                   mat.SetVector("_WorldLightDir", envParam.sunLight.transform.forward);
+                {
+                    mat.SetVector("_WorldLightDir", envParam.sunLight.transform.forward);
+                    mat.DisableKeyword("_POINTFORCES_ON");
+                }
                 
-                mat.SetColor("_SpecularColor", envParam.sunLight.color);
+                mat.SetColor("_SpecularColor", envParam.sunLight.color * envParam.sunLight.intensity);
 
                 //envParam.sunLight.cullingMask = 0;
                 //envParam.sunLight.shadows = LightShadows.None;
@@ -351,10 +810,9 @@ namespace NOcean
 
 	    public void AddPG(NeoNormalGrid PGrid)
 	    {
-	        if (!grids.Contains(PGrid))
+	        if (PGrid && !grids.Contains(PGrid))
 	        {
-                Material mat = PGrid.oceanMaterial;
-	            UpdateMaterial(PGrid, mat, true);
+	            UpdateMaterial(PGrid.oceanMaterial);
 	            grids.Add(PGrid);
 	        }
 	    }
@@ -444,6 +902,8 @@ namespace NOcean
 
         void OnDestroy()
 	    {
+            RelBuffer();
+
             gTime = 0;
 
             DestroyAllMaterial();

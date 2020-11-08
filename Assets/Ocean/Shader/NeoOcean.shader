@@ -5,18 +5,20 @@ Properties {
 
 	_DistortParams ("Refract, Reflect, Normal Power, Normal Sharp Bias", Vector) = (0.05 , 0.05, 4.0, 3.0)
 	_AboveDepth ("Depth", Range (0.1, 1)) = 0.3
-	_ShallowEdge ("Shallow", Range (0.01, 1.0)) = 0.12
-	_Fresnel("Fresnel", Range(0, 0.5)) = 0.04
-	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
-	_Fade ("Fade", Range (0, 0.03)) = 0.002
-	
-	_FoamMask("Foam Mask (Tiling & Shore)", 2D) = "black" {}
-	_Foam ("Foam Intensity, Shore, Peak, Distort", Vector) = (1, 1, 1, 0.5)
 
-	_SunIntensity ("SunIntensity", Range (0.0, 10)) = 0.05
+	_Fresnel("Fresnel", Range(0.01, 0.5)) = 0.04
+	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
+	_Fade ("Fade", Range (0.001, 0.03)) = 0.002
+	
+	_FoamMask("Foam Mask (Peak(R) FX(B) Shore(G))", 2D) = "black" {}
+
+	_FoamPeak("Foam Peak (Style & Scale & Attetion & Edge)", Vector) = (1, 1, 1, 1)
+	_Foam ("Foam Intensity, Depth, Appear, Distort", Vector) = (1, 1, 0.5, 0.1)
+
+	_SunIntensity ("SunIntensity", Range (0.1, 10)) = 0.05
 	_Shininess ("Shininess", Range (2.0, 500)) = 32	
 
-	[KeywordEnum(OFF, ON)] _PIXELFORCES("Point High Light", float) = 0
+	[HideInInspector][KeywordEnum(OFF, ON)] _POINTFORCES("Point High Light", float) = 0
 	[HideInInspector][KeywordEnum(OFF, ON)] _PROJECTED("Projected Mode", float) = 0
 } 
 
@@ -42,7 +44,7 @@ Properties {
 	#pragma target 3.0 
 	#pragma exclude_renderers gles
 
-	#pragma multi_compile _PIXELFORCES_OFF _PIXELFORCES_ON
+	#pragma multi_compile _POINTFORCES_OFF _POINTFORCES_ON
 	#pragma multi_compile _PROJECTED_OFF _PROJECTED_ON
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE

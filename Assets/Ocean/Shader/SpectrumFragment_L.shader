@@ -95,8 +95,11 @@ Shader "NeoOcean/SpectrumFragment_L" {
 			    float4 OUT;
 			    
 	#if 0
-				//displace & normal
-				OUT = float4(h2 + COMPLEX(h3), n3);
+				float choppiness = 1;
+				float ik = choppiness / max(g, 0.01);
+
+				//displace
+				OUT = float4(h2 + COMPLEX(h3), n2 * ik);
 	#else
 				//normal only
 				OUT = float4(n2, n3);
