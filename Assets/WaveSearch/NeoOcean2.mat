@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 0.783
+    - _AboveDepth: 1
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
@@ -64,13 +64,13 @@ Material:
     - _WaveScale2: 0.185
     - _nSnell: 3
     m_Colors:
-    - _BaseColor: {r: 0.079476684, g: 0.3584906, b: 0.30613968, a: 1}
+    - _BaseColor: {r: 0.07843137, g: 0.34630343, b: 0.35686275, a: 1}
     - _DistortParams: {r: 0.02, g: 0.03, b: 2.9, a: 1}
-    - _Foam: {r: 1, g: 0.5, b: 0.25, a: 0.1}
+    - _Foam: {r: 1, g: 0.2, b: 0.25, a: 0.1}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
-    - _FoamPeak: {r: 0.5, g: 4.56, b: 50, a: 2.02}
+    - _FoamPeak: {r: 1.74, g: 0.67, b: 20, a: 1.31}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
-    - _ShallowColor: {r: 0.10457456, g: 0.5448649, b: 0.8867924, a: 1}
+    - _ShallowColor: {r: 0, g: 0.42111203, b: 0.5882353, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}
     - _WaveOffset: {r: 0.5, g: -0.5, b: -0.5, a: 0.5}
   m_BuildTextureStacks: []

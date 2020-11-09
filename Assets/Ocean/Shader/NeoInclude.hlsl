@@ -477,7 +477,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float edge = saturate(exp2(-_AboveDepth * depth));
 
-	baseColor = lerp(baseColor, refractions * shallowColor, edge);
+	baseColor = lerp(baseColor, refractions * 1, edge);
 
 #if defined (_POINTFORCES_ON)
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
@@ -490,23 +490,23 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	// to get an effect when you see through the material
 	// hard coded pow constant
 	float phase = abs(dot(viewVector, normalize(worldNormal + Dir)));
-	float InScatter = pow(phase, 2) * lerp(.1f, 3, edge);
+	float InScatter = pow(phase, 2) * lerp(.5f, 1, edge);
 	baseColor += InScatter * shallowColor;
 
-	baseColor = lerp(baseColor * shadow, reflectionColor, fresnelFac );
+	baseColor = lerp(baseColor, reflectionColor, fresnelFac ) * shadow;
 
 	baseColor += _SpecularColor * spec * lerp(fade, shadow, 0.5) / max(edge, 0.1);
 
 	half height = i.screenPos.z;
-	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb; //r=thick, g=medium, b=light
+	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb;
 
-	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r);
-	half shoreDepth = exp2(-_Foam.y * viewVector.y * depth);
-	float maxInt = saturate(max(shoreDepth, height));
+	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r) * 2;
+	half shoreDepth = exp2(-_Foam.y * depth);
+	float maxInt = saturate(max(shoreDepth * (1 - fresnelFac), height));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + maxInt * _FoamMask_ST.w) * _Foam.z + 1) * maxInt * foamMap.b;
-	half peakFoam = height * foamMap.r * shadow * phase;
+	half peakFoam = height * foamMap.r * phase;
 
-    baseColor += min(max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x * fade, 2);
+    baseColor += min(max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x * fade, 2) * shadow;
 
 	baseColor.rgb = MixFog(baseColor.rgb, i.worldPos.w);
 

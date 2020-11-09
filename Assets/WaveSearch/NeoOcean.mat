@@ -143,20 +143,20 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 1
+    - _AboveDepth: 0.703
     - _Ambient: 1
     - _Displacement: 0.27863377
     - _DisplacementTiling: 18.586807
     - _ExtinctColor: 0.4
     - _ExtinctScale: 1
     - _FFTSize: 392
-    - _Fade: 0.0167
+    - _Fade: 0.00788
     - _FadeAwayIntensity: 0.0023214286
     - _FadeExp: 0.91503274
     - _FadeIntensity: 256
     - _FoamWaveDependency: 0.10205479
     - _Fog: 0.018
-    - _Fresnel: 0.065
+    - _Fresnel: 0.077
     - _FresnelPower: 1.7931035
     - _FresnelScale: 0.74
     - _GerstnerIntensity: 1
@@ -173,12 +173,12 @@ Material:
     - _SatScale: 1.5
     - _Shadow: 0.5
     - _ShallowEdge: 0.874
-    - _Shininess: 349
+    - _Shininess: 500
     - _ShoreBlend: 8
     - _ShoreEdge: 8
     - _ShoreTiling: 56.862743
     - _Speed: 0.4137931
-    - _SunIntensity: 0.28
+    - _SunIntensity: 0.25
     - _TrailDistort: 10
     - _TrailIntensity: 1.5
     - _UnderDepth: 0.78
@@ -192,7 +192,7 @@ Material:
     - WaveSpeed: {r: 1.086165, g: 4.440575, b: 12.105146, a: -3.0206447}
     - _AnimationDirection: {r: 2, g: 4, b: 2, a: -1}
     - _AnimationTiling: {r: 0.04582553, g: 0.0182, b: 0.045714468, a: 0.027129691}
-    - _BaseColor: {r: 0.06972327, g: 0.27283013, b: 0.482, a: 1}
+    - _BaseColor: {r: 0.12111769, g: 0.3324417, b: 0.5686275, a: 1}
     - _BumpDirection: {r: 0.00000008742278, g: 1, b: 0.45399055, a: 0.89100647}
     - _BumpMap_ST: {r: 1, g: 1, b: 0, a: 0}
     - _BumpTiling: {r: 0.05, g: 0.005, b: -0.01, a: -0.001}
@@ -201,11 +201,11 @@ Material:
     - _DepthColorFade: {r: 0.8880597, g: 0.27834705, b: 0.44463244, a: 0.22352941}
     - _Displacement: {r: 6.6371665, g: 20.353983, b: -1, a: -0.681416}
     - _DisplacementXz: {r: 0.6499999, g: -2.9203715, b: 1.6599998, a: -3.9363046}
-    - _DistortParams: {r: 0.01, g: 0.3, b: 6.71, a: 6}
+    - _DistortParams: {r: 0.01, g: 0.2, b: 8, a: 3}
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
     - _Foam: {r: 1, g: 1.07, b: 0.25, a: 0.13}
-    - _FoamPeak: {r: 2.15, g: 1, b: 1.71, a: 15}
+    - _FoamPeak: {r: 2.15, g: 1, b: 1.71, a: 13.58}
     - _FoamTiling: {r: 0.03, g: 0.003, b: 0.001, a: 0.001}
     - _FoamWaveParams: {r: 0, g: 0.24918434, b: 3.3395782, a: 1}
     - _Fresnel_ST: {r: 1, g: 1, b: 0, a: 0}
@@ -226,7 +226,7 @@ Material:
     - _RefrColorDepth: {r: 0.050066825, g: 0.23134327, b: 0.17049524, a: 1}
     - _RefractionFog: {r: 0.50543475, g: 0.50543475, b: 0.50543475, a: 0.5}
     - _RefractionTex_ST: {r: 1, g: 1, b: 0, a: 0}
-    - _ShallowColor: {r: 0.23552941, g: 0.6039216, b: 0.60112005, a: 1}
+    - _ShallowColor: {r: 0.34161207, g: 0.518, b: 0.50683624, a: 1}
     - _ShoreColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShorePerturbation: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreTiling: {r: 1, g: 1, b: 0.1, a: 0.1}
