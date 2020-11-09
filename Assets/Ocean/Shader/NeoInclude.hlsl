@@ -118,6 +118,7 @@ half _InvNeoScale;
 half4 _SpecularColor;
 half4 _BaseColor;
 half4 _ShallowColor;
+half _ShallowEdge;
 half _Fresnel;
 half _Shadow;
 
@@ -477,8 +478,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float edge = saturate(exp2(-_AboveDepth * depth));
 
-	baseColor = lerp(baseColor, refractions * 1, edge);
-
+	baseColor = lerp(baseColor, lerp(shallowColor, refractions, pow(edge, _ShallowEdge)), edge);
+	
 #if defined (_POINTFORCES_ON)
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
 	float spec = GGXSpecularDir(viewVector, worldNormal2, Dir);
@@ -490,7 +491,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	// to get an effect when you see through the material
 	// hard coded pow constant
 	float phase = abs(dot(viewVector, normalize(worldNormal + Dir)));
-	float InScatter = pow(phase, 2) * lerp(.5f, 1, edge);
+	float4 InScatter = phase * phase * lerp(0.5, 1, edge);
 	baseColor += InScatter * shallowColor;
 
 	baseColor = lerp(baseColor, reflectionColor, fresnelFac ) * shadow;

@@ -143,7 +143,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AboveDepth: 0.703
+    - _AboveDepth: 0.562
     - _Ambient: 1
     - _Displacement: 0.27863377
     - _DisplacementTiling: 18.586807
@@ -172,7 +172,7 @@ Material:
     - _RefrDistort: 1.4393286
     - _SatScale: 1.5
     - _Shadow: 0.5
-    - _ShallowEdge: 0.874
+    - _ShallowEdge: 3
     - _Shininess: 500
     - _ShoreBlend: 8
     - _ShoreEdge: 8
@@ -226,7 +226,7 @@ Material:
     - _RefrColorDepth: {r: 0.050066825, g: 0.23134327, b: 0.17049524, a: 1}
     - _RefractionFog: {r: 0.50543475, g: 0.50543475, b: 0.50543475, a: 0.5}
     - _RefractionTex_ST: {r: 1, g: 1, b: 0, a: 0}
-    - _ShallowColor: {r: 0.34161207, g: 0.518, b: 0.50683624, a: 1}
+    - _ShallowColor: {r: 0.29411766, g: 0.6313726, b: 0.5938396, a: 1}
     - _ShoreColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShorePerturbation: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreTiling: {r: 1, g: 1, b: 0.1, a: 0.1}

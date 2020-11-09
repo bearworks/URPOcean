@@ -5,6 +5,7 @@ Properties {
 
 	_DistortParams ("Refract, Reflect, Normal Power, Normal Sharp Bias", Vector) = (0.05 , 0.05, 4.0, 3.0)
 	_AboveDepth ("Depth", Range (0.1, 1)) = 0.3
+	_ShallowEdge("Shallow", Range(0.1, 3)) = 0.5
 
 	_Fresnel("Fresnel", Range(0.01, 0.5)) = 0.04
 	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
