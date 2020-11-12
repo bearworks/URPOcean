@@ -72,6 +72,11 @@ namespace NOcean
                 return;
             }
 
+            if (!oceanMaterial)
+            {
+                return;
+            }
+            
             Vector2 cornertmp = Vector2.zero;
             foCorners0 = CalculeLocalPosition(ref cornertmp, ref m_Range);
             cornertmp = new Vector2(+1.0f, 0.0f);
@@ -175,7 +180,7 @@ namespace NOcean
             mesh.vertices = vertices;
             mesh.triangles = indices;
 
-            const float maxBound = 1e2f; //far close to infi
+            const float maxBound = 1e5f; //far close to infi
             mesh.bounds = new Bounds(Vector3.zero, maxBound * Vector3.one);
 
             meshFilter.sharedMesh = mesh;

@@ -53,7 +53,7 @@ namespace NOcean
         }
 
         //public bool willRender = false;
-        
+
         public virtual void LateUpdate()
         {
             NeoOcean.oceanheight = this.transform.position.y;
@@ -61,24 +61,36 @@ namespace NOcean
 #if UNITY_EDITOR
             NeoOcean.instance.AddPG(this);
 #endif
-          
+
             oceanMaterial.DisableKeyword("_PROJECTED_ON");
         }
-        
+
         // Update is called once per frame
         public void SetupMaterial(RenderTexture rt, float scale)
         {
-            if (oceanMaterial == null)
+            Renderer rd = GetComponent<Renderer>();
+
+            if (rd == null)
+            {
                 return;
+            }
+
+            if (oceanMaterial == null)
+            {
+                if(rd.sharedMaterial != null)
+                    oceanMaterial = rd.sharedMaterial;
+                else
+                    return;
+            }
 
             oceanMaterial.SetFloat("_InvNeoScale", 1f / scale);
 
             oceanMaterial.SetTexture("_Map0", rt);
 
 #if UNITY_EDITOR
-            GetComponent<Renderer>().hideFlags = HideFlags.HideInInspector;
+            rd.hideFlags = HideFlags.HideInInspector;
 #endif
-            GetComponent<Renderer>().sharedMaterial = oceanMaterial;
+            rd.sharedMaterial = oceanMaterial;
         }
 
 
