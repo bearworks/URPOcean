@@ -7,7 +7,7 @@ Properties {
 	_AboveDepth ("Depth", Range (0.1, 1)) = 0.3
 	_ShallowEdge("Shallow", Range(0.1, 3)) = 0.5
 
-	_Fresnel("Fresnel", Range(0.01, 0.5)) = 0.04
+	_Fresnel("Fresnel", Range(-0.5, 0.5)) = 0.04
 	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
 	_Fade ("Fade", Range (0.001, 0.03)) = 0.002
 	

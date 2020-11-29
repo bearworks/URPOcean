@@ -459,7 +459,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	float fresnel = pow(1 - dotNV, 5);
 
-	half fresnelFac = _Fresnel + (1 - _Fresnel) * fresnel;
+	half fresnelFac = saturate(_Fresnel + (1 - _Fresnel) * fresnel);
 
 	if (underwater)
 	{
