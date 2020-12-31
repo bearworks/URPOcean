@@ -19,16 +19,17 @@ Shader "Skybox/ProceduralCloud" {
 			_CloudDensity("Cloud density",range(0,1)) = 0.75
 			_CloudCull("Cloud cull",range(0,1)) = 0.5
 
-			_CloudDither("Cloud dither",float) = 10
+			_Scatter("Scatter",range(0,1)) = 0.03
+			_HGCoeff("Henyey-Greenstein", Float) = 0.5
+			_Extinct("Extinction Coeff", Float) = 0.01
+
+			//_CloudDither("Cloud dither",float) = 10
 
 			_CloudNumber("Cloud number",range(0,0.05)) = 0.03
-			_CloudLit("Cloud lit",range(0,0.05)) = 0.03
 
 			_CloudUp("Cloud up",float) = 15000
 			_CloudStep("Cloud step",float) = 20000
 			_CloudStep2("Cloud step2",float) = 30000
-
-			_Color("Cloud Color",Color) = (1,1,1,1)
 		}
 
 			SubShader{
@@ -381,11 +382,13 @@ Shader "Skybox/ProceduralCloud" {
 					float _CloudStep2;
 					float _CloudStep;
 					float _CloudUp;
-					float _CloudLit;
 					float _CloudCull;
 
-					float _CloudDither;
-					float4 _Color;
+					//float _CloudDither;
+					float _Extinct;
+					float  _Scatter;
+					float _HGCoeff;
+
 
 #if 0 
 					float hash(float3 p)  // replace this by something better
@@ -440,38 +443,19 @@ Shader "Skybox/ProceduralCloud" {
 					{
 						p *= _CloudNumber * 0.1;
 						p.x += _Time.x * _CloudSpeed;
-						return noise(p) * 2 - 1;
-					}
-
-					//--------------------------------------------------------------------------
-					float MapSH(float3 p)
-					{
-						float h = FBM(p);
-						return h;
+						return _CloudDensity * (noise(p) * 2 - 1);
 					}
 
 					float Map(float3 p)
 					{
-						float h = _CloudDensity * FBM(p) - _CloudCull;
+						float h = FBM(p) - _CloudCull;
 						return max(h, 0);
 					}
 
-
 					float HenyeyGreenstein(float cosine)
 					{
-						float _HGCoeff = -0.84;
 						float g2 = _HGCoeff * _HGCoeff;
 						return 0.5 * (1 - g2) / pow(1 + g2 - 2 * _HGCoeff * cosine, 1.5);
-					}
-
-					float GetLighting(float3 p, float3 sun, float len, float hg, float den)
-					{
-#if 1
-						float l = MapSH(p + sun * len) - den;
-						return (max(exp(-l) * hg, 0) * _CloudLit);
-#else
-						return _CloudLit;
-#endif
 					}
 
 					float raySphereIntersect(float3 s0_r0, float3 rd, float sr) {
@@ -508,11 +492,17 @@ Shader "Skybox/ProceduralCloud" {
 						p += dot(p.xyz, p.yzx + 19.19);
 						return frac(p.x * p.y * p.z);
 					}
+
+					float Beer(float depth)
+					{
+						return exp(-_Extinct * depth) ;
+					}
+
 					float4 GetCloudColor(float3 dir)
 					{
 						// Start position...
 						float3 p = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep) * dir;
-						p += Hash(p) * _CloudDither;
+						//p += Hash(p) * _CloudDither;
 
 						// End position...
 						float3 e = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep2) * dir;
@@ -520,27 +510,33 @@ Shader "Skybox/ProceduralCloud" {
 						float Sec = 16;
 
 						float Thickness = length(e - p);
-
-						float rayLen = max(0, Thickness / Sec);
+						float rayLen = max(0.001, Thickness / Sec);
 
 						float3 light = _WorldSpaceLightPos0.xyz;
-						float hg = min(HenyeyGreenstein(dot(-dir, light)) * 0.5 + 0.5, 2);
+						float hg = HenyeyGreenstein(dot(-dir, light));
 
-						// Trace clouds through that layer...
-						float2 shadeSum = float2(0.0, .0);
-						// I think this is as small as the loop can be
-						// for a reasonable cloud density illusion.
+						float depth = 0;
+						float3 acc = 0;
+						float alpha = 0;
 						for (float ii = 0; ii < Sec; ii += 1)
 						{
-							if (shadeSum.y < 0) break;
-							Thickness = length(e - p);
-							float den = Map(p);
-							float ll = GetLighting(p, _WorldSpaceLightPos0.xyz, Thickness, hg, den);
-							shadeSum += float2(ll, den) * (1.0 - shadeSum.y);
+							float n = Map(p);
+							if (n > 0)
+							{
+								float density = n * rayLen;
+								float scatter = density * _Scatter * hg;
+								acc += scatter * Beer(depth);
+								float da = (1.0 - alpha);
+								if (da < 0)
+									break;
+
+								alpha += da * n;
+								depth += density;
+							}
 							p += dir * rayLen;
 						}
 
-						return float4(lerp(_LightColor0.rgb * _Color.rgb, 1, shadeSum.x), shadeSum.y);
+						return float4(_LightColor0.rgb * acc, alpha);
 					}
 
 					half4 frag(v2f IN) : SV_Target

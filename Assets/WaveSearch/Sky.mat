@@ -64,14 +64,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtmosphereThickness: 1
+    - _AtmosphereThickness: 1.1
     - _BumpScale: 1
     - _CloudCull: 0
-    - _CloudDensity: 1
-    - _CloudDither: 5
+    - _CloudDensity: 0.118
+    - _CloudDither: 0
     - _CloudLit: 0.05
-    - _CloudNumber: 0.0252
-    - _CloudSpeed: 1
+    - _CloudNumber: 0.0131
+    - _CloudSpeed: 0.68
     - _CloudStep: 7000
     - _CloudStep2: 7180
     - _CloudUp: 6125
@@ -79,20 +79,24 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Exposure: 1
+    - _Extinct: 0.14
+    - _Extinct22: 2.73
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HGCoeff: -0.15
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Rotation: 0
+    - _Scatter: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SunDisk: 2
-    - _SunSize: 0.027
-    - _SunSizeConvergence: 5
+    - _SunSize: 0.046
+    - _SunSizeConvergence: 5.45
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
@@ -101,3 +105,4 @@ Material:
     - _GroundColor: {r: 0.36899996, g: 0.34899998, b: 0.34099993, a: 1}
     - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Tint: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  m_BuildTextureStacks: []
