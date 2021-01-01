@@ -455,7 +455,7 @@ Shader "Skybox/ProceduralCloud" {
 					float HenyeyGreenstein(float cosine)
 					{
 						float g2 = _HGCoeff * _HGCoeff;
-						return 0.5 * (1 - g2) / pow(1 + g2 - 2 * _HGCoeff * cosine, 1.5);
+						return (1 - g2) *(1 + cosine * cosine) / ((2 + g2) * pow(1 + g2 - 2 * _HGCoeff * cosine, 1.5));
 					}
 
 					float raySphereIntersect(float3 s0_r0, float3 rd, float sr) {
