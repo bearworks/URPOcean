@@ -23,7 +23,7 @@ Shader "Skybox/ProceduralCloud" {
 			_HGCoeff("Henyey-Greenstein", Float) = 0.5
 			_Extinct("Extinction Coeff", Float) = 0.01
 
-			//_CloudDither("Cloud dither",float) = 10
+			_CloudColor("Cloud Color", Color) = (.5, .5, .5, 1)
 
 			_CloudNumber("Cloud number",range(0,0.05)) = 0.03
 
@@ -384,7 +384,7 @@ Shader "Skybox/ProceduralCloud" {
 					float _CloudUp;
 					float _CloudCull;
 
-					//float _CloudDither;
+					float4 _CloudColor;
 					float _Extinct;
 					float  _Scatter;
 					float _HGCoeff;
@@ -484,15 +484,6 @@ Shader "Skybox/ProceduralCloud" {
 						return -1;
 					}
 
-					#define MOD3 float3(.16532,.17369,.15787)
-
-					float Hash(float3 p)
-					{
-						p = frac(p * MOD3);
-						p += dot(p.xyz, p.yzx + 19.19);
-						return frac(p.x * p.y * p.z);
-					}
-
 					float Beer(float depth)
 					{
 						return exp(-_Extinct * depth) ;
@@ -500,6 +491,9 @@ Shader "Skybox/ProceduralCloud" {
 
 					float4 GetCloudColor(float3 dir)
 					{
+						if (dir.y < 0.01)
+							return 0;
+
 						// Start position...
 						float3 p = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep) * dir;
 						//p += Hash(p) * _CloudDither;
@@ -507,7 +501,7 @@ Shader "Skybox/ProceduralCloud" {
 						// End position...
 						float3 e = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep2) * dir;
 
-						float Sec = 16;
+						float Sec = 1;
 
 						float Thickness = length(e - p);
 						float rayLen = max(0.001, Thickness / Sec);
@@ -524,8 +518,7 @@ Shader "Skybox/ProceduralCloud" {
 							if (n > 0)
 							{
 								float density = n * rayLen;
-								float scatter = density * _Scatter * hg;
-								acc += scatter * Beer(depth);
+								acc += density * Beer(depth);
 								float da = (1.0 - alpha);
 								if (da < 0)
 									break;
@@ -536,7 +529,7 @@ Shader "Skybox/ProceduralCloud" {
 							p += dir * rayLen;
 						}
 
-						return float4(_LightColor0.rgb * acc, alpha);
+						return float4(_CloudColor.rgb * acc * _Scatter * hg, alpha);
 					}
 
 					half4 frag(v2f IN) : SV_Target
@@ -573,9 +566,9 @@ Shader "Skybox/ProceduralCloud" {
 #if SKYBOX_SUNDISK == SKYBOX_SUNDISK_HQ || SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
 							float yy = min(ray.y + 1.0, 1.0);
 							float4 c = GetCloudColor(-ray);
-							c.a *= smoothstep(0.001, 0.1, 1.0 - yy);
+							c.a *= smoothstep(0.01, 0.1, 1.0 - yy);
 
-							col = lerp(col, c, saturate(c.a));
+							col = lerp(col, c.rgb * col.rgb, saturate(c.a));
 #endif
 							return half4(col,1.0);
 
