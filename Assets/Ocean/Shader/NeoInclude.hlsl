@@ -457,7 +457,13 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 reflectionColor = rtReflections;
 
-	float fresnel = pow(1 - dotNV, 5);
+	half fresnelPow = 5;
+	if (underwater)
+	{
+		fresnelPow = 2;
+	}
+
+	float fresnel = pow(1 - dotNV, fresnelPow);
 
 	half fresnelFac = saturate(_Fresnel + (1 - _Fresnel) * fresnel);
 
@@ -476,7 +482,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
-	float edge = saturate(exp2(-_AboveDepth * depth));
+	float edge = exp2(-_AboveDepth * depth);
 
 	baseColor = lerp(baseColor, lerp(shallowColor, refractions, pow(edge, _ShallowEdge)), edge);
 	
@@ -511,7 +517,15 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor.rgb = MixFog(baseColor.rgb, i.worldPos.w);
 
-	baseColor = lerp(baseColor, refractions, edge);
+	if (underwater)
+	{
+		edge *= edge;
+		fresnelFac *= fade;
+		fresnelFac *= fresnelFac;
+		edge += fresnelFac;
+	}
+
+	baseColor = lerp(baseColor, refractions, saturate(edge));
 
 	return half4(clamp(baseColor.rgb, 0, MaxLitValue), 1);
 }

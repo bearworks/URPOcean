@@ -459,9 +459,8 @@ Shader "Skybox/ProceduralCloud" {
 					}
 
 					float raySphereIntersect(float3 s0_r0, float3 rd, float sr) {
-						// - r0: ray origin
+						// - s0_r0: ray origin - sphere center
 						// - rd: normalized ray direction
-						// - s0: sphere center
 						// - sr: sphere radius
 						// - Returns distance from r0 to first intersecion with sphere,
 						//   or -1.0 if no intersection.
@@ -494,42 +493,32 @@ Shader "Skybox/ProceduralCloud" {
 						if (dir.y < 0.01)
 							return 0;
 
+						//float3 camPos = _WorldSpaceCameraPos.xyz;
+
+						float3 camPos = 0;
+
+						float3 s0_r0 = float3(0, -_CloudUp, 0) - camPos;
 						// Start position...
-						float3 p = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep) * dir;
+						float3 p = camPos - raySphereIntersect(s0_r0, dir, _CloudStep) * dir;
 						//p += Hash(p) * _CloudDither;
 
 						// End position...
-						float3 e = _WorldSpaceCameraPos.xyz - raySphereIntersect(float3(0, -1, 0) * _CloudUp, dir, _CloudStep2) * dir;
-
-						float Sec = 1;
+						float3 e = camPos - raySphereIntersect(s0_r0, dir, _CloudStep2) * dir;
 
 						float Thickness = length(e - p);
-						float rayLen = max(0.001, Thickness / Sec);
+						float rayLen = max(0.001, Thickness);
 
 						float3 light = _WorldSpaceLightPos0.xyz;
 						float hg = HenyeyGreenstein(dot(-dir, light));
 
-						float depth = 0;
 						float3 acc = 0;
-						float alpha = 0;
-						for (float ii = 0; ii < Sec; ii += 1)
+						float n = Map(p);
+						if (n > 0)
 						{
-							float n = Map(p);
-							if (n > 0)
-							{
-								float density = n * rayLen;
-								acc += density * Beer(depth);
-								float da = (1.0 - alpha);
-								if (da < 0)
-									break;
-
-								alpha += da * n;
-								depth += density;
-							}
-							p += dir * rayLen;
+							acc = _CloudColor.rgb * n * rayLen * Beer(n) * _Scatter * hg;
 						}
 
-						return float4(_CloudColor.rgb * acc * _Scatter * hg, alpha);
+						return float4(acc, n);
 					}
 
 					half4 frag(v2f IN) : SV_Target
