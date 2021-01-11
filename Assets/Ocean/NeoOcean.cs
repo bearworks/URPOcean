@@ -782,6 +782,18 @@ namespace NOcean
             if (mat == null)
                 return;
 
+            if (reflection)
+            {
+                if (reflection.m_settings.m_SSR)
+                {
+                    mat.EnableKeyword("_SSREFLECTION_ON");
+                }
+                else
+                {
+                    mat.DisableKeyword("_SSREFLECTION_ON");
+                }
+            }
+
             if (envParam.sunLight != null)
 	        {
                 if (envParam.sunLight.type == LightType.Point)

@@ -45,11 +45,12 @@ Properties {
 	#pragma target 3.0 
 	#pragma exclude_renderers gles
 
-	#pragma multi_compile _POINTFORCES_OFF _POINTFORCES_ON
-	#pragma multi_compile _PROJECTED_OFF _PROJECTED_ON
+	#pragma multi_compile _ _POINTFORCES_ON
+	#pragma multi_compile _ _PROJECTED_ON
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
-	#pragma multi_compile _WATERWAVE_OFF _WATERWAVE_ON
+	#pragma multi_compile _ _WATERWAVE_ON
+	#pragma multi_compile _ _SSREFLECTION_ON
 	#pragma multi_compile_fog
 
 	#include "NeoInclude.hlsl"

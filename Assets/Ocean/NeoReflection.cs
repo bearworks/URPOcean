@@ -25,6 +25,7 @@ namespace NOcean
             public ResolutionMulltiplier m_ResolutionMultiplier = ResolutionMulltiplier.Third;
             public float m_ClipPlaneOffset = 0.07f;
             public LayerMask m_ReflectLayers = -1;
+            public bool m_SSR;
             public bool m_Shadows;
         }
 
@@ -120,7 +121,7 @@ namespace NOcean
             Vector4 clipPlane = CameraSpacePlane(m_ReflectionCamera, pos - Vector3.up * 0.1f, normal, 1.0f);
             Matrix4x4 projection = realCamera.CalculateObliqueMatrix(clipPlane);
             m_ReflectionCamera.projectionMatrix = projection;
-            m_ReflectionCamera.cullingMask = m_settings.m_ReflectLayers; // never render water layer
+            m_ReflectionCamera.cullingMask = m_settings.m_SSR ? 0 : (int)m_settings.m_ReflectLayers; // never render water layer
             m_ReflectionCamera.transform.position = newpos;
         }
         
@@ -197,7 +198,7 @@ namespace NOcean
             UniversalAdditionalCameraData lwrpCamData =
                 go.AddComponent(typeof(UniversalAdditionalCameraData)) as UniversalAdditionalCameraData;
             //UniversalAdditionalCameraData lwrpCamDataCurrent = currentCamera.GetComponent<UniversalAdditionalCameraData>();
-            lwrpCamData.renderShadows = m_settings.m_Shadows; // turn off shadows for the reflection camera
+            lwrpCamData.renderShadows = m_settings.m_SSR ? false : m_settings.m_Shadows; // turn off shadows for the reflection camera
             lwrpCamData.requiresColorOption = CameraOverrideOption.Off;
             lwrpCamData.requiresDepthOption = CameraOverrideOption.Off;
             var reflectionCamera = go.GetComponent<Camera>();

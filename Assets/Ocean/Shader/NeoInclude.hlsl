@@ -285,6 +285,72 @@ inline void FoProjInterpolate(inout half3 i)
 }
 #endif
 
+#if defined(_SSREFLECTION_ON)
+
+void SSRRayConvert(float3 worldPos, out float4 clipPos, out float3 screenPos)
+{
+	clipPos = TransformWorldToHClip(worldPos);
+	float k = ((1.0) / (clipPos.w));
+
+	screenPos.xy = ComputeScreenPos(clipPos).xy * k;
+
+	screenPos.z = k;
+}
+
+float3 SSRRayMarch(float3 worldPos, float3 reflection)
+{
+	float4 startClipPos;
+	float3 startScreenPos;
+
+	SSRRayConvert(worldPos, startClipPos, startScreenPos);
+
+	float4 farClipPos;
+	float3 farScreenPos;
+
+	SSRRayConvert(worldPos + reflection * 100000, farClipPos, farScreenPos);
+
+	if ((farScreenPos.x > 0) && (farScreenPos.x < 1) && (farScreenPos.y > 0) && (farScreenPos.y < 1))
+	{
+		float farDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, farScreenPos.xy), _ZBufferParams);
+
+		if (farDepth > startClipPos.w)
+		{
+			return float3(farScreenPos.xy, 1);
+		}
+	}
+
+	return float3(0, 0, 0);
+}
+
+float3 GetSSRUVZ(float2 screenUV, float3 NoV, float3 worldPos, float3 reflection)
+{
+	screenUV = screenUV * 2 - 1;
+	screenUV *= screenUV;
+
+	half ssrWeight = saturate(1 - dot(screenUV, screenUV));
+
+	NoV = NoV * 2.5;
+	ssrWeight *= (1 - NoV * NoV);
+
+	if (ssrWeight > 0.005)
+	{
+		float3 uvz = SSRRayMarch(worldPos, reflection);
+		uvz.z *= ssrWeight;
+		return uvz;
+	}
+
+	return float3(0, 0, 0);
+}
+
+half4 GetSSRLighting(float2 screenUV, float3 NoV, float3 worldPos, float3 reflection)
+{
+	float3 uvz = GetSSRUVZ(screenUV, NoV, worldPos, reflection);
+
+	half3 ssrColor = lerp(half3(0, 0, 0), SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uvz.xy), uvz.z > 0);
+
+	return half4(ssrColor, uvz.z);
+}
+#endif
 
 struct appdata_img
 {
@@ -364,6 +430,8 @@ bool IsUnderwater(const float facing)
 
 half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 {
+	half2 ior = (i.screenPos.xy) / i.screenPos.w;
+
 	bool underwater = IsUnderwater(facing);
 
 	// get tangent space basis    	
@@ -372,7 +440,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	slope += c.xy;
 	slope += c.zw;
 
-	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, (i.screenPos.xy) / i.screenPos.w);
+	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, ior);
 	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
 
 	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
@@ -439,12 +507,18 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 rtReflections;
 	if (!underwater)
-		rtReflections = tex2D(_PlanarReflectionTexture, i.screenPos.xy / i.screenPos.w + lerp(0, worldNormal.xz * REALTIME_DISTORTION, fade));
+		rtReflections = tex2D(_PlanarReflectionTexture, ior + lerp(0, worldNormal.xz * REALTIME_DISTORTION, fade));
 	else
 		rtReflections = _ShallowColor;
 
-
 	half dotNV = saturate(dot(viewVector, worldNormal));
+	
+#if defined(_SSREFLECTION_ON)
+	half3 reflectVector = normalize(reflect(-viewVector, normalize(lerp(WORLD_UP, worldNormal, REALTIME_DISTORTION * fade * 2))));
+	half4 SSReflections = GetSSRLighting(ior, dotNV, i.worldPos.xyz, reflectVector);
+	rtReflections = lerp(lerp(rtReflections, SSReflections, SSReflections.a), SSReflections, SSReflections.a > 0.99);
+#endif
+
 	// base, depth & reflection colors
 	half4 baseColor = _BaseColor;
 
