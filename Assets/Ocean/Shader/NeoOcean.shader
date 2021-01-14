@@ -50,9 +50,9 @@ Properties {
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
 	#pragma multi_compile _ _WATERWAVE_ON
-	#pragma multi_compile _ _SSREFLECTION_ON
+	#pragma multi_compile_fragment _ _SSREFLECTION_ON
+	#pragma multi_compile_fragment _ _SHADOWS_SOFT
 	#pragma multi_compile_fog
-
 	#include "NeoInclude.hlsl"
 	#pragma vertex vert_MQ
 	#pragma fragment frag_MQ

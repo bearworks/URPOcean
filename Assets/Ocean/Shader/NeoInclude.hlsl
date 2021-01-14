@@ -251,7 +251,10 @@ float4 _Map0_TexelSize;
 
 sampler2D _PlanarReflectionTexture;
 
+#if defined (_WATERWAVE_ON)
 TEXTURE2D(_WaterFXMap); SAMPLER(sampler_WaterFXMap);
+#endif
+
 TEXTURE2D(_FoamMask); SAMPLER(sampler_FoamMask);
 TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
 TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
@@ -402,10 +405,11 @@ v2f_MQ vert_MQ(appdata_base vert)
 
 	half4 screenUV = ComputeScreenPos(TransformWorldToHClip(worldSpaceVertex));
 	screenUV.xyz /= screenUV.w;
-
+	
+#if defined (_WATERWAVE_ON)
 	half4 waterFX = SAMPLE_TEXTURE2D_LOD(_WaterFXMap, sampler_WaterFXMap, screenUV.xy, 0);
 	worldSpaceVertex.y += (waterFX.w * 2 - 1) ;
-
+#endif
 	o.pos = mul(UNITY_MATRIX_VP, float4(worldSpaceVertex, 1.0));
 
 	o.screenPos = ComputeScreenPos(o.pos);
@@ -439,16 +443,16 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half4 c = tex2D(_Map0, i.bumpCoords.xy);
 	slope += c.xy;
 	slope += c.zw;
-
+	
+#if defined (_WATERWAVE_ON)
 	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, ior);
 	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
-
+#endif
 	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
 	half3 worldNormal2 = (half3(-slope.x, NORMAL_SHARPBIAS, -slope.y)); //sharp normal
 
-	half k = 0;
-
 #if defined (_WATERWAVE_ON)
+	half k = 0;
 	half2 uv = 1 - (i.bumpCoords.zw - _WaveCoord.xy) * _WaveCoord.zw;
 	half2 ba = tex2D(_WaveTex, uv).rg;
 	ba *= step(0, uv.x);
@@ -580,8 +584,11 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half height = i.screenPos.z;
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb;
-
-	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10, max(waterFX.r, k) * foamMap.r) * 2;
+#if defined (_WATERWAVE_ON)
+	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10 * edge, max(waterFX.r, k) * foamMap.r) * 2;
+#else
+	half fxFoam = foamMap.g * edge;
+#endif
 	half shoreDepth = exp2(-_Foam.y * depth);
 	float maxInt = saturate(max(shoreDepth * (1 - fresnelFac), height));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + maxInt * _FoamMask_ST.w) * _Foam.z + 1) * maxInt * foamMap.b;
