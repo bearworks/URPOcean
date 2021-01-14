@@ -112,6 +112,7 @@ namespace NOcean
             GetComponent<Renderer>().lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
             Mesh mesh = new Mesh();
+            mesh.hideFlags = HideFlags.HideAndDontSave;
 
             meshFilter.sharedMesh = mesh;
 
@@ -209,6 +210,11 @@ namespace NOcean
             NeoOcean.oceanheight = usedOceanHeight;
 
             basePlane = new Plane(Vector3.up, usedOceanHeight * Vector3.up);
+
+            if (m_gridsize != usedGridSize)
+            {
+                GenMesh();
+            }
         }
 
         // Check the point of intersection with the plane (0,y,0,0) and return the position in homogenous coordinates 
