@@ -55,8 +55,6 @@ namespace UnityEngine.Rendering.Universal
             int divider = 4;
             if (m_SunShafts.resolution == SunShaftsResolution.Normal)
                 divider = 2;
-            else if (m_SunShafts.resolution == SunShaftsResolution.High)
-                divider = 1;
 
             if (!positiveZ)
             {

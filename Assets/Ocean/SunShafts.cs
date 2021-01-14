@@ -6,7 +6,6 @@ namespace UnityEngine.Rendering.Universal
     {
         Low = 0,
         Normal = 1,
-        High = 2,
     }
 
     public enum ShaftsScreenBlendMode
