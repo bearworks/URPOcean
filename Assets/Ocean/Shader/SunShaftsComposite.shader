@@ -83,8 +83,8 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		return color / SAMPLES_FLOAT;
 	}	
 	
-	half TransformColor (half4 skyboxValue) {
-		return max (skyboxValue.a, dot (skyboxValue.rgb, float3 (0.59,0.3,0.11))); 		
+	half4 TransformColor (half4 skyboxValue) {
+		return max (skyboxValue, 0); 		
 	}
 	
 	half4 frag_depth (v2f i) : SV_Target {
