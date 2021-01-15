@@ -112,7 +112,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	half4 FragBlurH(Varyings input) : SV_Target
 	{
 		UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-		float texelSize = _MainTex_TexelSize.x * 2.0;
+		float texelSize = _MainTex_TexelSize.x;
 		float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
 
 		// 9-tap gaussian blur on the downsampled source

@@ -83,7 +83,6 @@ namespace UnityEngine.Rendering.Universal
             // mask out everything except the skybox
             // we have 2 methods, one of which requires depth buffer support, the other one is just comparing images
 
-            material.SetVector("_BlurRadius4", new Vector4(1.0f, 1.0f, 0.0f, 0.0f) * sradius);
             material.SetVector("_SunPosition", new Vector4(vSun.x, vSun.y, vSun.z, m_SunShafts.maxRadius.value));
             material.SetFloat("_FoSunInt", RenderSettings.sun.intensity);
 
