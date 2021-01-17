@@ -84,7 +84,6 @@ namespace UnityEngine.Rendering.Universal
             // we have 2 methods, one of which requires depth buffer support, the other one is just comparing images
 
             material.SetVector("_SunPosition", new Vector4(vSun.x, vSun.y, vSun.z, m_SunShafts.maxRadius.value));
-            material.SetFloat("_FoSunInt", RenderSettings.sun.intensity);
 
             cmd.Blit(TempTargetId, lrDepthBuffer, material, 2);
             // paint a small black small border to get rid of clamping problems
@@ -131,8 +130,6 @@ namespace UnityEngine.Rendering.Universal
             }
 
             // put together:
-            Color sunColor = RenderSettings.sun.color;
-            material.SetVector("_FoSunColor", new Vector4(sunColor.r, sunColor.g, sunColor.b, sunColor.a));
             material.SetTexture("_ColorBuffer", lrDepthBuffer);
             cmd.Blit(TempTargetId, destination, material, (m_SunShafts.screenBlendMode == ShaftsScreenBlendMode.Screen) ? 0 : 4);
 

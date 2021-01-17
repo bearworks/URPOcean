@@ -24,8 +24,6 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	TEXTURE2D_X_FLOAT(_CameraDepthTexture);
 	TEXTURE2D_X(_ColorBuffer);
 
-	half4 _FoSunColor;
-	half _SinRaysWave;
 	half4 _BlurRadius4;
 	half4 _SunPosition;
 	half4 _MainTex_TexelSize;	
@@ -48,7 +46,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 
 		half4 colorB = SAMPLE_TEXTURE2D_X(_ColorBuffer, sampler_PointClamp, i.uv.xy);
 
-		half4 depthMask = saturate (colorB * _FoSunColor);
+		half4 depthMask = saturate (colorB * _MainLightColor);
 		return 1.0f - (1.0f-colorA) * (1.0f-depthMask);	
 	}
 
@@ -56,7 +54,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	{ 
 		half4 colorA = SAMPLE_TEXTURE2D_X(_MainTex, sampler_PointClamp, i.uv.xy);
 		half4 colorB = SAMPLE_TEXTURE2D_X(_ColorBuffer, sampler_PointClamp, i.uv.xy);
-		half4 depthMask = saturate (colorB * _FoSunColor);
+		half4 depthMask = saturate (colorB * _MainLightColor);
 		return colorA + depthMask;	
 	}
 	
