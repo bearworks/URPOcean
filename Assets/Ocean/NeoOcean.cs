@@ -813,6 +813,21 @@ namespace NOcean
                 //envParam.sunLight.shadows = LightShadows.None;
                 //envParam.sunLight.renderMode = LightRenderMode.ForceVertex;
             }
+            else if (RenderSettings.sun != null)
+            {
+                if (RenderSettings.sun.type == LightType.Point)
+                {
+                    mat.SetVector("_WorldLightPos", RenderSettings.sun.transform.position);
+                    mat.EnableKeyword("_POINTFORCES_ON");
+                }
+                else
+                {
+                    mat.SetVector("_WorldLightDir", RenderSettings.sun.transform.forward);
+                    mat.DisableKeyword("_POINTFORCES_ON");
+                }
+
+                mat.SetColor("_SpecularColor", RenderSettings.sun.color * RenderSettings.sun.intensity);
+            }
             else
             {
                 mat.SetColor("_SpecularColor", Color.black);
