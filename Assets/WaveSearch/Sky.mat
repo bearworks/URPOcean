@@ -67,11 +67,11 @@ Material:
     - _AtmosphereThickness: 1.1
     - _BumpScale: 1
     - _CloudCull: 0
-    - _CloudDensity: 0.25
+    - _CloudDensity: 0.67
     - _CloudDither: 0
     - _CloudLit: 0.05
     - _CloudNumber: 0.0102
-    - _CloudSpeed: 0.68
+    - _CloudSpeed: 1
     - _CloudStep: 7000
     - _CloudStep2: 7180
     - _CloudUp: 5808
@@ -79,7 +79,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Exposure: 1
-    - _Extinct: 0.14
+    - _Extinct: 4
     - _Extinct22: 2.73
     - _GlossMapScale: 1
     - _Glossiness: 0.5
