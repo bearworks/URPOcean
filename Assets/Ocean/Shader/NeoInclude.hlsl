@@ -130,12 +130,7 @@ float _Fade;
 // specularity
 float _Shininess;
 half _SunIntensity;
-#if defined (_POINTFORCES_ON)
 half4 _WorldLightPos;
-#else
-half4 _WorldLightDir;
-#endif
-
 	
 // fresnel, vertex & bump displacements & strength
 float4 _DistortParams; // need float precision
@@ -153,8 +148,6 @@ float4 _DistortParams; // need float precision
 sampler2D _WaveTex;
 float4 _WaveCoord;
 #endif
-
-#if defined (_POINTFORCES_ON)
 
 inline float NeoGGXTerm(float NdotH, float roughness)
 {
@@ -179,50 +172,10 @@ inline float GGXSpecularDir(float3 V, float3 N, float3 Dir)
 
 	return clamp(gf * NeoGGXTerm(nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
 #else
-	return clamp(NeoGGXTerm(nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
+	return clamp(NeoGGXTerm(nh, _Shininess) * saturate(dot(N, -Dir)), 0, MaxLitValue) * _SunIntensity;
 #endif
 }
 
-inline float BlinnPhongSpecularDir(float3 V, float3 N, float3 Dir)
-{
-	float3 h = normalize(V - Dir);
-	float nh = max(0, dot(N, h));
-	return clamp(pow(nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
-}
-
-#else
-
-inline float NeoGGXTerm(float NdotH, float roughness)
-{
-	float a = roughness * roughness;
-	a *= a;
-	//on some gpus need float precision
-	float d = NdotH * NdotH * (a - 1.f) + 1.f;
-	return a / (UNITY_PI * d * d + 1e-7f);
-}
-
-inline half GGXSpecular(float3 V, float3 N)
-{
-	float3 h = normalize(-_WorldLightDir.xyz + V);
-	float nh = 1 - dot(N, h);
-	return clamp(NeoGGXTerm(nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
-}
-
-inline half PhongSpecular(float3 V, float3 N)
-{
-	float3 h = reflect(_WorldLightDir.xyz, N);
-	float nh = max (0,dot(V, h));
-	return clamp(pow (nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
-}
-
-
-inline half BlinnPhongSpecular(float3 V, float3 N)
-{
-	float3 h = normalize (-_WorldLightDir.xyz + V);
-	float nh = max (0,dot(N, h));
-	return clamp(pow (nh, _Shininess), 0, MaxLitValue) * _SunIntensity;
-}
-#endif
 
 inline float Fade(float3 d) 
 {
@@ -564,13 +517,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor = lerp(baseColor, lerp(shallowColor, refractions, pow(edge, _ShallowEdge)), edge);
 	
-#if defined (_POINTFORCES_ON)
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
 	float spec = GGXSpecularDir(viewVector, worldNormal2, Dir);
-#else
-	float3 Dir = _WorldLightDir.xyz;
-	half spec = PhongSpecular(viewVector, worldNormal2);
-#endif
 
 	// to get an effect when you see through the material
 	// hard coded pow constant

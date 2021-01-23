@@ -45,7 +45,6 @@ Properties {
 	#pragma target 3.0 
 	#pragma exclude_renderers gles
 
-	#pragma multi_compile _ _POINTFORCES_ON
 	#pragma multi_compile _ _PROJECTED_ON
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
 	#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
