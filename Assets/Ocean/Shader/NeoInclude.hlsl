@@ -522,7 +522,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	// to get an effect when you see through the material
 	// hard coded pow constant
-	float phase = abs(dot(viewVector, normalize(worldNormal + Dir)));
+	float phase = abs(dot(viewVector, normalize(lerp(i.normalInterpolator.xyz, WORLD_UP, 0.75) + Dir))) * 0.5 + 0.5;
 	float4 InScatter = phase * phase * lerp(0.5, 1, edge);
 	baseColor += InScatter * shallowColor;
 
