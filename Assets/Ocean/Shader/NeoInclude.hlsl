@@ -278,15 +278,14 @@ float3 SSRRayMarch(float3 worldPos, float3 reflection)
 	return float3(0, 0, 0);
 }
 
-float3 GetSSRUVZ(float2 screenUV, float3 NoV, float3 worldPos, float3 reflection)
+float3 GetSSRUVZ(float2 screenUV, float fresnel, float3 worldPos, float3 reflection)
 {
 	screenUV = screenUV * 2 - 1;
 	screenUV *= screenUV;
 
 	half ssrWeight = saturate(1 - dot(screenUV, screenUV));
 
-	NoV = NoV * 2.5;
-	ssrWeight *= (1 - NoV * NoV);
+	ssrWeight *= fresnel;
 
 	if (ssrWeight > 0.005)
 	{
@@ -298,9 +297,9 @@ float3 GetSSRUVZ(float2 screenUV, float3 NoV, float3 worldPos, float3 reflection
 	return float3(0, 0, 0);
 }
 
-half4 GetSSRLighting(float2 screenUV, float3 NoV, float3 worldPos, float3 reflection)
+half4 GetSSRLighting(float2 screenUV, float fresnel, float3 worldPos, float3 reflection)
 {
-	float3 uvz = GetSSRUVZ(screenUV, NoV, worldPos, reflection);
+	float3 uvz = GetSSRUVZ(screenUV, fresnel, worldPos, reflection);
 
 	half3 ssrColor = lerp(half3(0, 0, 0), SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uvz.xy), uvz.z > 0);
 
@@ -469,10 +468,25 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 		rtReflections = _ShallowColor;
 
 	half dotNV = saturate(dot(viewVector, worldNormal));
-	
+
+	half fresnelPow = 5;
+	if (underwater)
+	{
+		fresnelPow = 1;
+	}
+
+	float fresnel = pow(1 - dotNV, fresnelPow);
+
+	half fresnelFac = saturate(_Fresnel + (1 - _Fresnel) * fresnel);
+
+	if (underwater)
+	{
+		fresnelFac = 1 - fresnelFac;
+	}
+
 #if defined(_SSREFLECTION_ON)
 	half3 reflectVector = normalize(reflect(-viewVector, normalize(lerp(WORLD_UP, worldNormal, REALTIME_DISTORTION * fade * 2))));
-	half4 SSReflections = GetSSRLighting(ior, dotNV, i.worldPos.xyz, reflectVector);
+	half4 SSReflections = GetSSRLighting(ior, fresnelFac, i.worldPos.xyz, reflectVector);
 	rtReflections = lerp(lerp(rtReflections, SSReflections, SSReflections.a), SSReflections, SSReflections.a > 0.99);
 #endif
 
@@ -487,21 +501,6 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half4 shallowColor = _ShallowColor;
 
 	half4 reflectionColor = rtReflections;
-
-	half fresnelPow = 5;
-	if (underwater)
-	{
-		fresnelPow = 2;
-	}
-
-	float fresnel = pow(1 - dotNV, fresnelPow);
-
-	half fresnelFac = saturate(_Fresnel + (1 - _Fresnel) * fresnel);
-
-	if (underwater)
-	{
-		fresnelFac = 1 - fresnelFac;
-	}
 
 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
 	half shadow = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.worldPos.xyz));
