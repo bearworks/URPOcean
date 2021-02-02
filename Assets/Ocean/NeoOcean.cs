@@ -799,14 +799,12 @@ namespace NOcean
                 if (envParam.sunLight.type == LightType.Point)
                 {
                     mat.SetVector("_WorldLightPos", envParam.sunLight.transform.position);
-                    mat.EnableKeyword("_POINTFORCES_ON");
                 }
                 else
                 {
-                    mat.SetVector("_WorldLightDir", envParam.sunLight.transform.forward);
-                    mat.DisableKeyword("_POINTFORCES_ON");
+                    mat.SetVector("_WorldLightPos", -envParam.sunLight.transform.forward * 10000);
                 }
-                
+
                 mat.SetColor("_SpecularColor", envParam.sunLight.color * envParam.sunLight.intensity);
 
                 //envParam.sunLight.cullingMask = 0;
@@ -818,12 +816,10 @@ namespace NOcean
                 if (RenderSettings.sun.type == LightType.Point)
                 {
                     mat.SetVector("_WorldLightPos", RenderSettings.sun.transform.position);
-                    mat.EnableKeyword("_POINTFORCES_ON");
                 }
                 else
                 {
-                    mat.SetVector("_WorldLightDir", RenderSettings.sun.transform.forward);
-                    mat.DisableKeyword("_POINTFORCES_ON");
+                    mat.SetVector("_WorldLightPos", -RenderSettings.sun.transform.forward * 10000);
                 }
 
                 mat.SetColor("_SpecularColor", RenderSettings.sun.color * RenderSettings.sun.intensity);
