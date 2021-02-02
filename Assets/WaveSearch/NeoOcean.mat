@@ -189,7 +189,7 @@ Material:
     - WaveSpeed: {r: 1.086165, g: 4.440575, b: 12.105146, a: -3.0206447}
     - _AnimationDirection: {r: 2, g: 4, b: 2, a: -1}
     - _AnimationTiling: {r: 0.04582553, g: 0.0182, b: 0.045714468, a: 0.027129691}
-    - _BaseColor: {r: 0.12111769, g: 0.3324417, b: 0.5686275, a: 1}
+    - _BaseColor: {r: 0, g: 0.07479298, b: 0.5471698, a: 1}
     - _BumpDirection: {r: 0.00000008742278, g: 1, b: 0.45399055, a: 0.89100647}
     - _BumpMap_ST: {r: 1, g: 1, b: 0, a: 0}
     - _BumpTiling: {r: 0.05, g: 0.005, b: -0.01, a: -0.001}
@@ -223,7 +223,7 @@ Material:
     - _RefrColorDepth: {r: 0.050066825, g: 0.23134327, b: 0.17049524, a: 1}
     - _RefractionFog: {r: 0.50543475, g: 0.50543475, b: 0.50543475, a: 0.5}
     - _RefractionTex_ST: {r: 1, g: 1, b: 0, a: 0}
-    - _ShallowColor: {r: 0.29411766, g: 0.6313726, b: 0.5938396, a: 1}
+    - _ShallowColor: {r: 0.18183532, g: 0.6313726, b: 0.5779622, a: 1}
     - _ShoreColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShorePerturbation: {r: 0, g: 0, b: 0, a: 0}
     - _ShoreTiling: {r: 1, g: 1, b: 0.1, a: 0.1}
