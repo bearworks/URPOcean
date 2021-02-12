@@ -28,7 +28,7 @@ Shader "Skybox/ProceduralCloud" {
 
 			_CloudUp("Earth Radius",float) = 6500
 			_CloudStep("Cloud step",float) = 6600
-			_CloudStep2("Cloud step2",float) = 7000
+			//_CloudStep2("Cloud step2",float) = 7000
 		}
 
 			SubShader{
@@ -501,11 +501,11 @@ Shader "Skybox/ProceduralCloud" {
 						float3 p = camPos - raySphereIntersect(s0_r0, dir, _CloudStep) * dir;
 						//p += Hash(p) * _CloudDither;
 
-						// End position...
-						float3 e = camPos - raySphereIntersect(s0_r0, dir, _CloudStep2) * dir;
+						//// End position...
+						//float3 e = camPos - raySphereIntersect(s0_r0, dir, _CloudStep2) * dir;
 
-						float Thickness = length(e - p);
-						float rayLen = max(0.001, Thickness);
+						//float Thickness = length(e - p);
+						//float rayLen = max(0.001, Thickness);
 
 						float3 light = _WorldSpaceLightPos0.xyz;
 						float hg = HenyeyGreenstein(dot(-dir, light));
@@ -514,7 +514,7 @@ Shader "Skybox/ProceduralCloud" {
 						float n = Map(p);
 						if (n > 0)
 						{
-							acc = n * rayLen * Beer(n) * _Scatter * hg;
+							acc = n * 100 * Beer(n) * _Scatter * hg;
 						}
 
 						return float4(acc, n);
