@@ -17,19 +17,18 @@ Shader "Skybox/ProceduralCloud" {
 
 			_CloudSpeed("Cloud speed",float) = 2
 			_CloudDensity("Cloud density",range(0,1)) = 0.75
-			//_CloudCull("Cloud cull",range(0,1)) = 0.5
+			_CloudCull("Cloud cull",range(0.8, 1.2)) = 1
 
 			_Scatter("Scatter",range(0,1)) = 0.03
 			_HGCoeff("Henyey-Greenstein", Float) = 0.5
 			_Extinct("Extinction Coeff", Float) = 0.01
 
 			_CloudColor("Cloud Color", Color) = (.5, .5, .5, 1)
+			_CloudNumber("Cloud number",range(0.01,0.3)) = 0.03
 
-			_CloudNumber("Cloud number",range(0,0.05)) = 0.03
-
-			_CloudUp("Cloud up",float) = 15000
-			_CloudStep("Cloud step",float) = 20000
-			_CloudStep2("Cloud step2",float) = 30000
+			_CloudUp("Earth Radius",float) = 6500
+			_CloudStep("Cloud step",float) = 6600
+			_CloudStep2("Cloud step2",float) = 7000
 		}
 
 			SubShader{
@@ -443,12 +442,11 @@ Shader "Skybox/ProceduralCloud" {
 					{
 						p *= _CloudNumber * 0.1;
 						p.xy += _Time.xx * _CloudSpeed;
-						return _CloudDensity * (noise(p) * 2 - 1);
+						return _CloudDensity * (noise(p) * 2 - _CloudCull);
 					}
 
 					float Map(float3 p)
 					{
-						//float h = FBM(p) - _CloudCull;
 						float h = FBM(p);
 						return max(h, 0);
 					}
@@ -516,7 +514,7 @@ Shader "Skybox/ProceduralCloud" {
 						float n = Map(p);
 						if (n > 0)
 						{
-							acc = _CloudColor.rgb * n * rayLen * Beer(n) * _Scatter * hg;
+							acc = n * rayLen * Beer(n) * _Scatter * hg;
 						}
 
 						return float4(acc, n);
@@ -556,9 +554,9 @@ Shader "Skybox/ProceduralCloud" {
 #if SKYBOX_SUNDISK == SKYBOX_SUNDISK_HQ || SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
 							float yy = min(ray.y + 1.0, 1.0);
 							float4 c = GetCloudColor(-ray);
-							c.a *= smoothstep(0.01, 0.5, 1.0 - yy);
+							c.a *= smoothstep(0.1, 0.5, 1.0 - yy);
 
-							col = lerp(col, c.rgb * col.rgb, saturate(c.a));
+							col = lerp(col, c.rgb * lerp(col.rgb, _CloudColor.rgb, _CloudColor.a), saturate(c.a * _CloudColor.a));
 #endif
 							return half4(col,1.0);
 
