@@ -226,7 +226,10 @@ namespace NOcean
         {
             if (camera.cameraType == CameraType.Reflection)
                 return;
-            
+
+            if (camera.cameraType == CameraType.Game && camera != Camera.main)
+                return;
+
             GL.invertCulling = true;
             RenderSettings.fog = false;
             var max = QualitySettings.maximumLODLevel;
