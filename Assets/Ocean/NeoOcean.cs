@@ -59,14 +59,14 @@ namespace NOcean
         public Shader ispectrum = null;
     }
 
-	[DisallowMultipleComponent]
-	[ExecuteInEditMode]
-	public class NeoOcean : MonoBehaviour
-	{
+    [DisallowMultipleComponent]
+    [ExecuteInEditMode]
+    public class NeoOcean : MonoBehaviour
+    {
         private NeoReflection reflection;
-        
-	    public NeoEnvParameters envParam = null;
-	    public static NeoOcean instance = null;
+
+        public NeoEnvParameters envParam = null;
+        public static NeoOcean instance = null;
 
         private float amplitude = 0.5f;
         private float direction = 0.1f;
@@ -122,23 +122,23 @@ namespace NOcean
 
         private NeoNormalGrid mainPGrid;
 
-	    private HashSet<NeoNormalGrid> grids = new HashSet<NeoNormalGrid>();
+        private HashSet<NeoNormalGrid> grids = new HashSet<NeoNormalGrid>();
 
         public NeoShaderPack shaderPack;
 
         [HideInInspector]
-	    public Material matSpectrum_l = null;
+        public Material matSpectrum_l = null;
         [HideInInspector]
-	    public Material matFourier_l = null;
+        public Material matFourier_l = null;
         [HideInInspector]
         public Material matIspectrum = null;
-        
+
         const bool needRT = true;
 
         [NonSerialized]
         public bool supportRT;
         bool CheckInstance(bool force)
-	    {
+        {
             if (instance == null)
                 instance = this;
             else if (force)
@@ -155,7 +155,7 @@ namespace NOcean
             }
 
             return instance == this;
-	    }
+        }
 
         private eFFTResolution GetFFTResolution()
         {
@@ -492,7 +492,7 @@ namespace NOcean
 
         public void CheckRT()
         {
-            supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) && 
+            supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) &&
              SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
 
             if (supportRT)
@@ -501,8 +501,8 @@ namespace NOcean
             }
         }
 
-	    void Awake()
-	    {
+        void Awake()
+        {
             if (!CheckInstance(true))
                 return;
 
@@ -513,6 +513,11 @@ namespace NOcean
             gTime = 0;
         }
 
+        float NormalizeWorldSize()
+        {
+            detailWaves.worldSize = Mathf.Max(1f, detailWaves.worldSize);
+            return detailWaves.worldSize * m_fftresolution / (int)(eFFTResolution.eFFT_NeoMedium);
+        }
 
 	    // Use this for initialization
 	    void Start()
@@ -522,7 +527,7 @@ namespace NOcean
 
             m_fftresolution = (int)GetFFTResolution();
 
-            m_worldfftSize = detailWaves.worldSize;
+            m_worldfftSize = NormalizeWorldSize();
 
             m_windSpeed = detailWaves.windSpeed;
 
@@ -530,7 +535,7 @@ namespace NOcean
             //m_Omega = fftParam.Omega;
             m_waveDirFlow = detailWaves.waveFlow;
 
-            m_inverseWorldSizes = INVERSEV(detailWaves.worldSize);
+            m_inverseWorldSizes = INVERSEV(m_worldfftSize);
 
             GenBuffer();
         }
@@ -581,11 +586,11 @@ namespace NOcean
                 return;
             }
 
-            if (m_worldfftSize != detailWaves.worldSize)
+            float worldsize = NormalizeWorldSize();
+            if (m_worldfftSize != worldsize)
             {
-                detailWaves.worldSize = Mathf.Max(1f, detailWaves.worldSize);
-                m_inverseWorldSizes = INVERSEV(detailWaves.worldSize);
-                m_worldfftSize = detailWaves.worldSize;
+                m_worldfftSize = worldsize;
+                m_inverseWorldSizes = INVERSEV(m_worldfftSize);
 
                 ForceReload(false);
                 return;
@@ -660,7 +665,7 @@ namespace NOcean
             var _e = grids.GetEnumerator();
             while (_e.MoveNext())
             {
-                float scale = (0.5f * detailWaves.worldSize);
+                float scale = (0.5f * m_worldfftSize);
 
                 _e.Current.SetupMaterial(m_map0, scale);
             }
