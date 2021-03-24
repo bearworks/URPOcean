@@ -235,7 +235,7 @@ namespace NOcean
             var max = QualitySettings.maximumLODLevel;
             var bias = QualitySettings.lodBias;
             QualitySettings.maximumLODLevel = 0;
-            QualitySettings.lodBias = bias * 2f;
+            QualitySettings.lodBias = bias / 2f;
 
             UpdateReflectionCamera(camera);
             m_ReflectionCamera.cameraType = camera.cameraType;
@@ -259,7 +259,7 @@ namespace NOcean
             GL.invertCulling = false;
             RenderSettings.fog = true;
             QualitySettings.maximumLODLevel = 0;
-            QualitySettings.lodBias = 8;
+            QualitySettings.lodBias = bias;
             Shader.SetGlobalTexture(planarReflectionTextureID, m_ReflectionTexture);
         }
     }
