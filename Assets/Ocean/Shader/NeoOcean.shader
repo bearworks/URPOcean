@@ -1,4 +1,4 @@
-﻿Shader "NeoOcean/NeoSurface" { 
+﻿Shader "URPOcean/NeoSurface" { 
 Properties {
 	_BaseColor ("Base color", COLOR)  = ( .54, .95, .99, 1)	
 	_ShallowColor ("Shallow color", COLOR)  = ( .10, .4, .43, 1)	

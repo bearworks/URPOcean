@@ -1,7 +1,7 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 
-Shader "NeoOcean/Fourier_L" 
+Shader "URPOcean/Fourier_L" 
 {
 	HLSLINCLUDE
 	

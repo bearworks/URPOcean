@@ -1,4 +1,4 @@
-﻿Shader "NeoOcean/InitialSpectrum" {
+﻿Shader "URPOcean/InitialSpectrum" {
 
 
 	SubShader {

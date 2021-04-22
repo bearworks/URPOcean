@@ -1,6 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "NeoOcean/SpectrumFragment_L" {
+Shader "URPOcean/SpectrumFragment_L" {
 	SubShader 
 	{
 		Pass 

@@ -1,4 +1,4 @@
-﻿Shader "NeoOcean/Underwater"
+﻿Shader "URPOcean/Underwater"
 {
 	Properties
 	{
