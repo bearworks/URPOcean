@@ -230,9 +230,9 @@ namespace NOcean
 
         public void GenAllMaterial()
         {
-            matSpectrum_l = CreateMaterial(ref shaderPack.spectruml_l, "NeoOcean/SpectrumFragment_L");
-            matFourier_l = CreateMaterial(ref shaderPack.fourier_l, "NeoOcean/Fourier_L");
-            matIspectrum = CreateMaterial(ref shaderPack.ispectrum, "NeoOcean/InitialSpectrum");
+            matSpectrum_l = CreateMaterial(ref shaderPack.spectruml_l, "URPOcean/SpectrumFragment_L");
+            matFourier_l = CreateMaterial(ref shaderPack.fourier_l, "URPOcean/Fourier_L");
+            matIspectrum = CreateMaterial(ref shaderPack.ispectrum, "URPOcean/InitialSpectrum");
         }
 
 
