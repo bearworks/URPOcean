@@ -245,7 +245,7 @@ namespace NOcean
             {
                 RenderTexture.ReleaseTemporary(m_ReflectionTexture);
 				
-                bool useHDR10 = true;// SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGB111110Float);
+                bool useHDR10 = camera.allowHDR;// SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGB111110Float);
                 RenderTextureFormat hdrFormat =
                     useHDR10 ? RenderTextureFormat.RGB111110Float : RenderTextureFormat.DefaultHDR;
                 m_ReflectionTexture = RenderTexture.GetTemporary(res.x, res.y, 16,
