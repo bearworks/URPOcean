@@ -103,6 +103,12 @@ half LerpOneTo(half b, half t)
 #define UNITY_PI 3.1415926
 #define UNITY_TWO_PI 6.2831852
 
+struct appdata_v {
+	float4 vertex : POSITION;
+	float3 normal : NORMAL;
+	//UNITY_VERTEX_INPUT_INSTANCE_ID
+};
+
 struct appdata_base {
 	float4 vertex : POSITION;
 	float3 normal : NORMAL;
@@ -329,7 +335,7 @@ v2f_img vert_img(appdata_img v)
 }
 
 //
-v2f_MQ vert_MQ(appdata_base vert)
+v2f_MQ vert_MQ(appdata_v vert)
 {
 	v2f_MQ o = (v2f_MQ)0;
 
@@ -366,7 +372,7 @@ v2f_MQ vert_MQ(appdata_base vert)
 
 	o.screenPos = ComputeScreenPos(o.pos);
 
-	o.screenPos.z = lerp(saturate(_FoamPeak.y * wave.position.y), exp2((wave.position.y - length(wave.position.xz) * _FoamPeak.w) * _FoamPeak.z), _FoamPeak.x);
+	o.screenPos.z = lerp(saturate(_FoamPeak.y * wave.da), exp2((wave.position.y - length(wave.position.xz) * _FoamPeak.w) * _FoamPeak.z), _FoamPeak.x);
 
 	float2 tileableUv = worldSpaceVertex.xz;
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;

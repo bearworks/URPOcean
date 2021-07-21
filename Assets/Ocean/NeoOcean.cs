@@ -546,14 +546,6 @@ namespace NOcean
             SetupWaves();
         }
 
-        public NeoNormalGrid mainPG
-        {
-            get
-            {
-                return mainPGrid;
-            }
-        }
-
         private NeoNormalGrid FindMainPGrid()
         {
             var _e = grids.GetEnumerator();

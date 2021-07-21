@@ -17,6 +17,7 @@ struct WaveStruct
 	float3 tangent;
 	float3 binormal;
 #endif
+	float da;
 };
 
 WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half direction, half wavelength)
@@ -53,12 +54,19 @@ WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half di
 	half3 n = half3(-(windDir.xy * wa * cosCalc), 1-(qiwa * sinCalc));
 	n = n.xzy;
 
+	half Jxx = 1 - (qiwa * windDir.x * windDir.x * sinCalc);
+	half Jyy = 1 - (qiwa * windDir.y * windDir.y * sinCalc);
+	half Jxy = qiwa * windDir.x * windDir.y * sinCalc;
+
+	waveOut.da = (Jxx * Jyy - Jxy * Jxy); // determinant(float2x2(Jxx, Jxy, Jxy, Jyy))
+	waveOut.da = (1 - waveOut.da) * waveCountMulti;
+
 #ifdef USE_TANGENT
 	// tangent vector
-	half3 t = half3(-(qiwa * windDir.x * windDir.y * sinCalc), (windDir.y * wa * cosCalc), 1 - (qiwa * windDir.y * windDir.y * sinCalc));
+	half3 t = half3(-(qiwa * windDir.x * windDir.y * sinCalc), (windDir.y * wa * cosCalc), Jyy);
 
 	// binormal vector
-	half3 b = half3(1 - (qiwa * windDir.x * windDir.x * sinCalc), (windDir.x * wa * cosCalc), -(qiwa * windDir.x * windDir.y * sinCalc));
+	half3 b = half3(Jxx, (windDir.x * wa * cosCalc), -(qiwa * windDir.x * windDir.y * sinCalc));
 #endif
 
 	////////////////////////////////assign to output///////////////////////////////
@@ -79,6 +87,7 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
 	WaveStruct waves[_WaveCount];
 	waveOut.position = 0;
 	waveOut.normal = 0;
+	waveOut.da = 0;
 #ifdef USE_TANGENT
 	waveOut.tangent = 0;
 	waveOut.binormal = 0;
@@ -94,9 +103,10 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
         						waveData[i].z); // calculate the wave
 		waveOut.position += waves[i].position; // add the position
 		waveOut.normal += waves[i].normal; // add the normal
+		waveOut.da += waves[i].da; // add the da
 #ifdef USE_TANGENT
-		waveOut.tangent += waves[i].tangent; // add the normal
-		waveOut.binormal += waves[i].binormal; // add the normal
+		waveOut.tangent += waves[i].tangent; // add the tangent
+		waveOut.binormal += waves[i].binormal; // add the binormal
 #endif
 	}
 }
