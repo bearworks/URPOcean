@@ -56,17 +56,17 @@ WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half di
 
 	half Jxx = 1 - (qiwa * windDir.x * windDir.x * sinCalc);
 	half Jyy = 1 - (qiwa * windDir.y * windDir.y * sinCalc);
-	half Jxy = qiwa * windDir.x * windDir.y * sinCalc;
+	half Jxy = -(qiwa * windDir.x * windDir.y * sinCalc);
 
 	waveOut.da = (Jxx * Jyy - Jxy * Jxy); // determinant(float2x2(Jxx, Jxy, Jxy, Jyy))
 	waveOut.da = (1 - waveOut.da) * waveCountMulti;
 
 #ifdef USE_TANGENT
 	// tangent vector
-	half3 t = half3(-(qiwa * windDir.x * windDir.y * sinCalc), (windDir.y * wa * cosCalc), Jyy);
+	half3 t = half3(Jxy, (windDir.y * wa * cosCalc), Jyy);
 
 	// binormal vector
-	half3 b = half3(Jxx, (windDir.x * wa * cosCalc), -(qiwa * windDir.x * windDir.y * sinCalc));
+	half3 b = half3(Jxx, (windDir.x * wa * cosCalc), Jxy);
 #endif
 
 	////////////////////////////////assign to output///////////////////////////////
