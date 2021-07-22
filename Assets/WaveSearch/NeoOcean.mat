@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: NeoOcean
   m_Shader: {fileID: 4800000, guid: 1a629c730af7ec5429ed2240e1f2c083, type: 3}
-  m_ShaderKeywords: _POINTFORCES_ON _PROJECTED_ON _SSREFLECTION_ON
+  m_ShaderKeywords: _POINTFORCES_ON _PROJECTED_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -61,7 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _FoamMask:
         m_Texture: {fileID: 2800000, guid: 927dfb18f58518e4fad57e1f03664774, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 4, y: 3}
     - _Fresnel:
         m_Texture: {fileID: 2800000, guid: 5b5c5575fd4c74abd9f7b30862fb76a3, type: 3}
@@ -147,7 +147,7 @@ Material:
     - _ExtinctColor: 0.4
     - _ExtinctScale: 1
     - _FFTSize: 392
-    - _Fade: 0.00788
+    - _Fade: 0.0208
     - _FadeAwayIntensity: 0.0023214286
     - _FadeExp: 0.91503274
     - _FadeIntensity: 256
@@ -201,8 +201,8 @@ Material:
     - _DistortParams: {r: 0.01, g: 0.2, b: 8, a: 3}
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
-    - _Foam: {r: 1, g: 1.07, b: 0.25, a: 0.13}
-    - _FoamPeak: {r: 2.15, g: 1, b: 1.71, a: 13.58}
+    - _Foam: {r: 1, g: 1.07, b: 0.25, a: 1}
+    - _FoamPeak: {r: 0.2, g: 15.25, b: 7.74, a: 0.18}
     - _FoamTiling: {r: 0.03, g: 0.003, b: 0.001, a: 0.001}
     - _FoamWaveParams: {r: 0, g: 0.24918434, b: 3.3395782, a: 1}
     - _Fresnel_ST: {r: 1, g: 1, b: 0, a: 0}

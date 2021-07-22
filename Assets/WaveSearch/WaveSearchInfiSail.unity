@@ -310,7 +310,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 202720316}
   m_CullTransparentMesh: 0
---- !u!43 &557908937
+--- !u!43 &237661619
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5543,7 +5543,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843753972}
-  m_Mesh: {fileID: 557908937}
+  m_Mesh: {fileID: 237661619}
 --- !u!4 &843753976
 Transform:
   m_ObjectHideFlags: 0
@@ -6268,7 +6268,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1767929651}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.7267537, y: -49.1, z: 21.099026}
+  m_LocalPosition: {x: -1058.6946, y: -49.1, z: -420.4421}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4892276892964270}
@@ -6667,9 +6667,10 @@ MonoBehaviour:
   envParam:
     sunLight: {fileID: 108219294922212976}
   basicWaves:
-    amplitude: 0.4
+    amplitude: 1
     direction: 78.9
-    wavelength: 10
+    wavelength: 15
+    choppiness: 1.508
   detailWaves:
     fftresolution: 128
     worldSize: 14.93

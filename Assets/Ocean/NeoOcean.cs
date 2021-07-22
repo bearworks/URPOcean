@@ -71,6 +71,7 @@ namespace NOcean
         private float amplitude = 0.5f;
         private float direction = 0.1f;
         private float wavelength = 2f;
+        private float choppiness = 1.5f;
 
         public BasicWaves basicWaves;
 
@@ -88,11 +89,8 @@ namespace NOcean
         private float m_offset;
         private float m_worldfftSize = 20;
         private Vector2 m_inverseWorldSizes;
-        //private float m_choppiness = 1.6f;
         private float m_windSpeed = 8.0f;
-        //private float m_waveAngle = 90f;
         private float m_waveAmp = 1.0f;
-        //float m_Omega = 0.84f;
         private float m_waveDirFlow = 0.0f;
 
         const float twoPI = 2f * Mathf.PI;
@@ -263,7 +261,7 @@ namespace NOcean
             m_map0.wrapMode = TextureWrapMode.Repeat;
             m_map0.anisoLevel = m_anisoLevel;
             m_map0.autoGenerateMips = usemips;
-            //m_map0.useMipMap = usemips; //bug on Some cards
+            m_map0.useMipMap = usemips; //bug on Some cards
             m_map0.hideFlags = HideFlags.DontSave;
             m_map0.Create();
             m_map0.DiscardContents();
@@ -565,7 +563,8 @@ namespace NOcean
 #endif
             if(amplitude != basicWaves.amplitude ||
                direction != basicWaves.direction ||
-               wavelength != basicWaves.wavelength)
+               wavelength != basicWaves.wavelength ||
+               choppiness != basicWaves.choppiness)
             {
                 SetupWaves();
             }
@@ -741,7 +740,7 @@ namespace NOcean
                 float amp = a * p * UnityEngine.Random.Range(0.8f, 1.2f);
                 float dir = d + UnityEngine.Random.Range(-45f, 45f);
                 float len = l * p * UnityEngine.Random.Range(0.6f, 1.4f);
-                _waves[i] = new Wave(amp, dir, len);
+                _waves[i] = new Wave(amp, dir, len, basicWaves.choppiness);
                 UnityEngine.Random.InitState(randomSeed + i + 1);
             }
             UnityEngine.Random.state = backupSeed;
@@ -767,6 +766,7 @@ namespace NOcean
             //GPU side
             Shader.SetGlobalVectorArray("waveData", GetWaveData());
             Shader.SetGlobalFloat("_WaveTime", gTime);
+            Shader.SetGlobalFloat("_Choppiness", basicWaves.choppiness);
 
             //CPU side
             GerstnerWavesJobs.Init();

@@ -68,7 +68,7 @@ Material:
     - _DistortParams: {r: 0.01, g: 0.13, b: 4.26, a: 2.94}
     - _Foam: {r: 4.43, g: 1, b: 0.25, a: 0.2}
     - _FoamColor: {r: 0, g: 0.40426216, b: 0.742, a: 1}
-    - _FoamPeak: {r: 0.02, g: 11.3, b: 11.6, a: 21.83}
+    - _FoamPeak: {r: 0.1, g: 11.3, b: 11.6, a: 21.83}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
     - _ShallowColor: {r: 0.48900002, g: 0.10415703, b: 0.33506298, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}

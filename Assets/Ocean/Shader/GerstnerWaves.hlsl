@@ -4,6 +4,7 @@
 #define USE_TANGENT
 
 float _WaveTime;
+float _Choppiness;
 
 #define _WaveCount 20 // how many waves, set via the water component
 
@@ -28,7 +29,7 @@ WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half di
 	half3 wave = 0; // wave vector
 	half w = 6.28318 / wavelength; // 2pi over wavelength(hardcoded)
 	half wSpeed = sqrt(9.8 * w); // frequency of the wave based off wavelength
-	half peak = 1; // peak value, 1 is the sharpest peaks
+	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
 	half qia = peak / (w * _WaveCount);
 	half qiwa = peak / (_WaveCount);
 
@@ -117,7 +118,7 @@ half3 GerstnerWavePos(half2 pos, float waveCountMulti, half amplitude, half dire
 	half3 wave = 0; // wave vector
 	half w = 6.28318 / wavelength; // 2pi over wavelength(hardcoded)
 	half wSpeed = sqrt(9.8 * w); // frequency of the wave based off wavelength
-	half peak = 1; // peak value, 1 is the sharpest peaks
+	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
 	half qia = peak / (w * _WaveCount);
 
 	direction = radians(direction); // convert the incoming degrees to radians, for directional waves

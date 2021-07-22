@@ -15,7 +15,7 @@ namespace NOcean
     public class WaterSurfaceData : ScriptableObject
     {
         public List<Wave> _waves = new List<Wave>();
-        public BasicWaves _basicWaveSettings = new BasicWaves(1.5f, 45.0f, 5.0f);
+        public BasicWaves _basicWaveSettings = new BasicWaves(1.5f, 45.0f, 5.0f, 1.5f);
     }
 
     [System.Serializable]
@@ -24,12 +24,14 @@ namespace NOcean
         public float amplitude; // height of the wave in units(m)
         public float direction; // direction the wave travels in degrees from Z+
         public float wavelength; // distance between crest>crest
+        public float choppiness;
 
-        public Wave(float amp, float dir, float length)
+        public Wave(float amp, float dir, float length, float chopp)
         {
             amplitude = amp;
             direction = dir;
             wavelength = length;
+            choppiness = chopp;
         }
     }
 
@@ -41,12 +43,15 @@ namespace NOcean
         [Range(0, 360)]
         public float direction = 0.1f;
         public float wavelength = 2f;
+        [Range(1, 2)]
+        public float choppiness = 1.5f;
 
-        public BasicWaves(float amp, float dir, float len)
+        public BasicWaves(float amp, float dir, float len, float chopp)
         {
             amplitude = amp;
             direction = dir;
             wavelength = len;
+            choppiness = chopp;
         }
     }
 
@@ -254,7 +259,7 @@ namespace NOcean
                         ////////////////////////////////wave value calculations//////////////////////////
                         var w = 6.28318f / wavelength; // 2pi over wavelength(hardcoded)
                         var wSpeed = math.sqrt(9.8f * w); // frequency of the wave based off wavelength
-                        var peak = 0.8f; // peak value, 1 is the sharpest peaks
+                        var peak = waveData[wave].choppiness; // peak value, 1 is the sharpest peaks
                         var qia = peak / (w * waveData.Length);
                         var qiwa = peak / waveData.Length;
 

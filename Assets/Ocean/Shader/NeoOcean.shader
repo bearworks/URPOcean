@@ -13,7 +13,7 @@ Properties {
 	
 	_FoamMask("Foam Mask (Peak(R) FX(B) Shore(G))", 2D) = "black" {}
 
-	_FoamPeak("Foam Peak (Style & Scale & Attetion & Edge)", Vector) = (1, 1, 1, 1)
+	_FoamPeak("Foam Peak (Blend & Scale & Attetion & Edge)", Vector) = (1, 1, 1, 1)
 	_Foam ("Foam Intensity, Depth, Appear, Distort", Vector) = (1, 1, 0.5, 0.1)
 
 	_SunIntensity ("SunIntensity", Range (0.1, 10)) = 0.05
