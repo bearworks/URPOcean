@@ -46,6 +46,10 @@ namespace NOcean
         [Range(1, 2)]
         public float choppiness = 1.5f;
 
+        public BasicWaves()
+        {
+        }
+
         public BasicWaves(float amp, float dir, float len, float chopp)
         {
             amplitude = amp;
