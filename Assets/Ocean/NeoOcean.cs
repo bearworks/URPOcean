@@ -300,7 +300,7 @@ namespace NOcean
             matIspectrum.SetFloat("fftresolution", m_fftresolution);
 
             Vector2 twoInvSizes = twoPI * m_inverseWorldSizes;
-            Vector4 sampleFFTSize = new Vector4(twoInvSizes.y, twoInvSizes.x, twoInvSizes.y, twoInvSizes.y);
+            Vector4 sampleFFTSize = new Vector4(twoInvSizes.x, twoInvSizes.y, 0, 0);
             matIspectrum.SetVector("sampleFFTSize", sampleFFTSize);
 
             Blit(null, m_spectrum01, matIspectrum);
@@ -567,6 +567,7 @@ namespace NOcean
                choppiness != basicWaves.choppiness)
             {
                 SetupWaves();
+                ForceReload(false);
             }
 
             int fftsize = (int)GetFFTResolution();

@@ -86,8 +86,8 @@ Shader "URPOcean/SpectrumFragment_L" {
 				b *= period;
 #endif
 
-			    float2 h2 = GetSpectrum(g, s12.zw, s12c.zw);
-			   	float2 h3 = GetSpectrum(b, s12.xy, s12c.xy);
+			    float2 h2 = GetSpectrum(g, s12.xy, s12c.xy);
+			   	float2 h3 = GetSpectrum(b, s12.zw, s12c.zw);
 			    
 				float2 n2 = COMPLEX(k2.x * h2) - k2.y * h2;
 				float2 n3 = COMPLEX(k3.x * h3) - k3.y * h3;
@@ -96,10 +96,11 @@ Shader "URPOcean/SpectrumFragment_L" {
 			    
 	#if 0
 				float choppiness = 1;
-				float ik = choppiness / max(g, 0.01);
+				float ik2 = choppiness / max(g, 0.01);
+				float ik3 = choppiness / max(b, 0.01);
 
 				//displace
-				OUT = float4(h2 + COMPLEX(h3), n2 * ik);
+				OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
 	#else
 				//normal only
 				OUT = float4(n2, n3);

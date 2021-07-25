@@ -261,8 +261,8 @@ void SSRRayConvert(float3 worldPos, out float4 clipPos, out float3 screenPos)
 
 float3 SSRRayMarch(float3 worldPos, float3 reflection)
 {
-	float4 startClipPos;
-	float3 startScreenPos;
+	float4 startClipPos = 0;
+	float3 startScreenPos = 0;
 
 	SSRRayConvert(worldPos, startClipPos, startScreenPos);
 
