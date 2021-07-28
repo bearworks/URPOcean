@@ -133,6 +133,8 @@ namespace NOcean
 
         const bool needRT = true;
 
+        const float octaveNum = 2;
+
         [NonSerialized]
         public bool supportRT;
         bool CheckInstance(bool force)
@@ -471,8 +473,7 @@ namespace NOcean
 
         private Vector2 INVERSEV(float V)
         {
-            const float goldenNum = 2 * 1.61803398875f;
-            return new Vector2(1f / (V * goldenNum), 1f / V);
+            return new Vector2(1f / (V * octaveNum), 1f / V);
         }
 
         public void ForceReload(bool bReGen)
@@ -657,7 +658,7 @@ namespace NOcean
             var _e = grids.GetEnumerator();
             while (_e.MoveNext())
             {
-                float scale = (0.5f * m_worldfftSize);
+                float scale = m_worldfftSize;
 
                 _e.Current.SetupMaterial(m_map0, scale);
             }

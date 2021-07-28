@@ -19,7 +19,6 @@ Properties {
 	_SunIntensity ("SunIntensity", Range (0.1, 10)) = 0.05
 	_Shininess ("Shininess", Range (2.0, 500)) = 32	
 
-	[HideInInspector][KeywordEnum(OFF, ON)] _POINTFORCES("Point High Light", float) = 0
 	[HideInInspector][KeywordEnum(OFF, ON)] _PROJECTED("Projected Mode", float) = 0
 } 
 
