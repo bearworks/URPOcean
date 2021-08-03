@@ -77,7 +77,7 @@ namespace NOcean
 
         public NeoFFTParameters detailWaves = null;
 
-        [Range(0.1f, 10)]
+        [Range(0.0f, 2)]
         public float uniWaveSpeed = 1.0f; //Scales the speed of all waves
 
         private bool usemips = true;
@@ -253,7 +253,7 @@ namespace NOcean
             if (!supportRT)
                 return;
 
-            RenderTextureFormat mapFormat = RenderTextureFormat.ARGBHalf;
+            RenderTextureFormat mapFormat = RenderTextureFormat.RGHalf;
 
             m_passes = (int)(Mathf.Log(m_fftresolution) / Mathf.Log(2.0f));
             m_butterflyLookupTable = new Texture2D[m_passes];
@@ -271,7 +271,7 @@ namespace NOcean
             m_queueRTs.AddLast(m_map0);
 
             //These textures hold the specturm the fourier transform is performed on
-            m_spectrum01 = new RenderTexture(m_fftresolution, m_fftresolution, 0, mapFormat, QualitySettings.activeColorSpace == ColorSpace.Linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
+            m_spectrum01 = new RenderTexture(m_fftresolution, m_fftresolution, 0, RenderTextureFormat.ARGBHalf, QualitySettings.activeColorSpace == ColorSpace.Linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
             m_spectrum01.filterMode = FilterMode.Point;
             m_spectrum01.wrapMode = TextureWrapMode.Repeat;
             m_spectrum01.useMipMap = false;
@@ -492,6 +492,7 @@ namespace NOcean
         public void CheckRT()
         {
             supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) &&
+             SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGHalf) && 
              SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
 
             if (supportRT)

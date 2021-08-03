@@ -94,17 +94,17 @@ Shader "URPOcean/SpectrumFragment_L" {
 	
 			    float4 OUT;
 			    
-	#if 0
-				float choppiness = 1;
-				float ik2 = choppiness / max(g, 0.01);
-				float ik3 = choppiness / max(b, 0.01);
+	//#if 0
+	//			float choppiness = 1;
+	//			float ik2 = choppiness / max(g, 0.01);
+	//			float ik3 = choppiness / max(b, 0.01);
 
-				//displace
-				OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
-	#else
+	//			//displace
+	//			OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
+	//#else
 				//normal only
-				OUT = float4(n2, n3);
-	#endif
+				OUT = float4(n2 + n3, 0, 0);
+	//#endif
 				return OUT;
 			}
 			

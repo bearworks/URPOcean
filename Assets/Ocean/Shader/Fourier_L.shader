@@ -34,6 +34,14 @@ Shader "URPOcean/Fourier_L"
 
 		return input1 + float4(rx,ry,rz,rw);
 	}
+	
+	float4 FFT2(float2 w, float4 input1, float4 input2) 
+	{
+		float rx = w.x * input2.x - w.y * input2.y;
+		float ry = w.y * input2.x + w.x * input2.y;
+
+		return input1 + float4(rx,ry,0,0);
+	}
 
 	float4 fragX_L(v2f IN): SV_Target
 	{
@@ -49,7 +57,7 @@ Shader "URPOcean/Fourier_L"
 		float2 uv1 = float2(lookUp.x, IN.uv.y);
 		float2 uv2 = float2(lookUp.y, IN.uv.y);
 		
-		OUT = FFT4(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
+		OUT = FFT2(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
 
 		return OUT;
 	}
@@ -69,7 +77,7 @@ Shader "URPOcean/Fourier_L"
 		float2 uv1 = float2(IN.uv.x, lookUp.x);
 		float2 uv2 = float2(IN.uv.x, lookUp.y);
 		
-		OUT = FFT4(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
+		OUT = FFT2(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
 
 		return OUT;
 	}
