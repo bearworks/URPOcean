@@ -253,7 +253,7 @@ namespace NOcean
             if (!supportRT)
                 return;
 
-            RenderTextureFormat mapFormat = RenderTextureFormat.RGHalf;
+            RenderTextureFormat mapFormat = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGHalf) ? RenderTextureFormat.RGHalf : RenderTextureFormat.ARGBHalf;
 
             m_passes = (int)(Mathf.Log(m_fftresolution) / Mathf.Log(2.0f));
             m_butterflyLookupTable = new Texture2D[m_passes];
@@ -492,7 +492,6 @@ namespace NOcean
         public void CheckRT()
         {
             supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) &&
-             SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGHalf) && 
              SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
 
             if (supportRT)
