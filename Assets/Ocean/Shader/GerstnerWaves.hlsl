@@ -21,7 +21,7 @@ struct WaveStruct
 	float da;
 };
 
-WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half direction, half wavelength)
+WaveStruct GerstnerWave(half2 pos, half amplitude, half direction, half wavelength)
 {
 	WaveStruct waveOut;
 
@@ -30,8 +30,7 @@ WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half di
 	half w = 6.28318 / wavelength; // 2pi over wavelength(hardcoded)
 	half wSpeed = sqrt(9.8 * w); // frequency of the wave based off wavelength
 	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
-	half qia = peak / (w * _WaveCount);
-	half qiwa = peak / (_WaveCount);
+	half qia = peak / w;
 
 	direction = radians(direction); // convert the incoming degrees to radians, for directional waves
 	half2 dirWaveInput = half2(sin(direction), cos(direction));
@@ -45,38 +44,37 @@ WaveStruct GerstnerWave(half2 pos, float waveCountMulti, half amplitude, half di
 	half sinCalc = sin(calc); // sin version(used for vertical undulation)
 
 	// calculate the offsets for the current point
-	wave.xz = qia * windDir.xy * cosCalc;
-	wave.y = ((sinCalc * amplitude)) * waveCountMulti;// the height is divided by the number of waves
+	half2 dirCos = windDir.xy * cosCalc;
+	wave.xz = qia * dirCos;
+	wave.y = sinCalc * amplitude;// the height is divided by the number of waves
 	
 	////////////////////////////normal output calculations/////////////////////////
-	half wa = w * amplitude;
+	half qiwaSin = peak * sinCalc;
 
-	half2 Nxy = -(windDir.xy * wa * cosCalc);
 	// normal vector
-	half3 n = half3(Nxy.x, 1-(qiwa * sinCalc), Nxy.y);
+	half2 Nxy = -(w * amplitude * dirCos);
+	half3 n = half3(Nxy.x, 1 - qiwaSin, Nxy.y);
 
-	half Jxx = 1 - (qiwa * windDir.x * windDir.x * sinCalc);
-	half Jyy = 1 - (qiwa * windDir.y * windDir.y * sinCalc);
-	half Jxy = -(qiwa * windDir.x * windDir.y * sinCalc);
+	half Jxx = 1 - (windDir.x * windDir.x * qiwaSin);
+	half Jyy = 1 - (windDir.y * windDir.y * qiwaSin);
+	half Jxy = -(windDir.x * windDir.y * qiwaSin);
 
 	waveOut.da = (Jxx * Jyy - Jxy * Jxy); // determinant(float2x2(Jxx, Jxy, Jxy, Jyy))
-	waveOut.da = (1 - waveOut.da) * waveCountMulti;
+	waveOut.da = (1 - waveOut.da);
 
-#ifdef USE_TANGENT
+	////////////////////////////////assign to output///////////////////////////////
+	waveOut.position = wave * saturate(amplitude * 10000);
+	waveOut.normal = n;
+
+#ifdef USE_TANGENT	
 	// tangent vector
 	half3 t = half3(Jxy, Nxy.y, Jyy);
 
 	// binormal vector
 	half3 b = half3(Jxx, Nxy.x, Jxy);
-#endif
 
-	////////////////////////////////assign to output///////////////////////////////
-	waveOut.position = wave * saturate(amplitude * 10000);
-	waveOut.normal = (n * waveCountMulti);
-
-#ifdef USE_TANGENT
-	waveOut.tangent = (t * waveCountMulti);
-	waveOut.binormal = (b * waveCountMulti);
+	waveOut.tangent = t;
+	waveOut.binormal = b;
 #endif
 
 	return waveOut;
@@ -98,7 +96,6 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
 	for(uint i = 0; i < _WaveCount; i++)
 	{
 		waves[i] = GerstnerWave(pos,
-        						waveCountMulti, 
         						waveData[i].x, 
         						waveData[i].y, 
         						waveData[i].z); // calculate the wave
@@ -110,16 +107,25 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
 		waveOut.binormal += waves[i].binormal; // add the binormal
 #endif
 	}
+
+		waveOut.position *= waveCountMulti;
+		waveOut.normal *= waveCountMulti;
+		waveOut.da *= waveCountMulti;
+#ifdef USE_TANGENT
+		waveOut.tangent *= waveCountMulti;
+		waveOut.binormal *= waveCountMulti;
+#endif
+
 }
 
-half3 GerstnerWavePos(half2 pos, float waveCountMulti, half amplitude, half direction, half wavelength)
+half3 GerstnerWavePos(half2 pos, half amplitude, half direction, half wavelength)
 {
 	////////////////////////////////wave value calculations//////////////////////////
 	half3 wave = 0; // wave vector
 	half w = 6.28318 / wavelength; // 2pi over wavelength(hardcoded)
 	half wSpeed = sqrt(9.8 * w); // frequency of the wave based off wavelength
 	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
-	half qia = peak / (w * _WaveCount);
+	half qia = peak / w;
 
 	direction = radians(direction); // convert the incoming degrees to radians, for directional waves
 	half2 dirWaveInput = half2(sin(direction), cos(direction));
@@ -134,7 +140,7 @@ half3 GerstnerWavePos(half2 pos, float waveCountMulti, half amplitude, half dire
 
 	// calculate the offsets for the current point
 	wave.xz = qia * windDir.xy * cosCalc;
-	wave.y = ((sinCalc * amplitude)) * waveCountMulti;// the height is divided by the number of waves
+	wave.y = ((sinCalc * amplitude));// the height is divided by the number of waves
 
 	return wave * saturate(amplitude * 10000);
 }
@@ -148,13 +154,13 @@ inline void SampleWavesPos(float2 position, out float3 waveOut)
 	for (uint i = 0; i < _WaveCount; i++)
 	{
 		waves[i] = GerstnerWavePos(pos,
-			waveCountMulti,
 			waveData[i].x,
 			waveData[i].y,
 			waveData[i].z); // calculate the wave
 
 		waveOut += waves[i]; // add the position
 	}
+	waveOut *= waveCountMulti;
 }
 
 #endif // GERSTNER_WAVES_INCLUDED

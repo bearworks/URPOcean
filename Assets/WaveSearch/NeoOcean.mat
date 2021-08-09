@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: NeoOcean
   m_Shader: {fileID: 4800000, guid: 1a629c730af7ec5429ed2240e1f2c083, type: 3}
-  m_ShaderKeywords: _POINTFORCES_ON _PROJECTED_ON
+  m_ShaderKeywords: _POINTFORCES_ON _PROJECTED_ON _SSREFLECTION_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -202,7 +202,7 @@ Material:
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
     - _Foam: {r: 1, g: 1.07, b: 0.25, a: 1}
-    - _FoamPeak: {r: 0.2, g: 15.25, b: 10, a: 0.8}
+    - _FoamPeak: {r: 0.2, g: 1, b: 10, a: 0.8}
     - _FoamTiling: {r: 0.03, g: 0.003, b: 0.001, a: 0.001}
     - _FoamWaveParams: {r: 0, g: 0.24918434, b: 3.3395782, a: 1}
     - _Fresnel_ST: {r: 1, g: 1, b: 0, a: 0}
