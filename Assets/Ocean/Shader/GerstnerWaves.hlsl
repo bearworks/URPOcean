@@ -6,7 +6,7 @@
 float _WaveTime;
 float _Choppiness;
 
-#define _WaveCount 20 // how many waves, set via the water component
+#define _WaveCount 16 // how many waves, set via the water component
 
 half4 waveData[_WaveCount]; // 0-9 amplitude, direction, wavelength, omni, 10-19 origin.xy
 

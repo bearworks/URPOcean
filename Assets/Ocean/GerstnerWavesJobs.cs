@@ -40,7 +40,7 @@ namespace NOcean
     [System.Serializable]
     public class BasicWaves
     {
-        public const int numWaves = 20;
+        public const int numWaves = 16;
         public float amplitude = 0.5f;
         [Range(0, 360)]
         public float direction = 0.1f;
