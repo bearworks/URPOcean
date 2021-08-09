@@ -750,10 +750,10 @@ namespace NOcean
 
         public Vector4[] GetWaveData()
         {
-            Vector4[] waveData = new Vector4[20];
+            Vector4[] waveData = new Vector4[BasicWaves.numWaves];
             for (int i = 0; i < _waves.Length; i++)
             {
-                waveData[i] = new Vector4(_waves[i].amplitude, _waves[i].direction, _waves[i].wavelength, 0f);
+                waveData[i] = new Vector4(_waves[i].amplitude, _waves[i].direction.x, _waves[i].wavelength, _waves[i].direction.y);
             }
             return waveData;
         }

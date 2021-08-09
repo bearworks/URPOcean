@@ -22,14 +22,16 @@ namespace NOcean
     public struct Wave
     {
         public float amplitude; // height of the wave in units(m)
-        public float direction; // direction the wave travels in degrees from Z+
+        public float2 direction; // direction the wave travels in degrees from Z+
         public float wavelength; // distance between crest>crest
         public float choppiness;
 
         public Wave(float amp, float dir, float length, float chopp)
         {
             amplitude = amp;
-            direction = dir;
+
+            dir = Mathf.Deg2Rad * dir; // convert the incoming degrees to radians, for directional waves
+            direction = new float2(Mathf.Sin(dir), Mathf.Cos(dir));
             wavelength = length;
             choppiness = chopp;
         }
@@ -270,9 +272,7 @@ namespace NOcean
                         var windDir = new float2(0f, 0f);
                         var dir = 0f;
 
-                        direction = math.radians(direction); // convert the incoming degrees to radians
-                        var windDirInput = new float2(math.sin(direction), math.cos(direction)); // calculate wind direction - TODO - currently radians
-
+                        var windDirInput = direction; // calculate wind direction 
                         windDir += windDirInput;
                         windDir = math.normalize(windDir);
                         dir = math.dot(windDir, pos); // calculate a gradient along the wind direction

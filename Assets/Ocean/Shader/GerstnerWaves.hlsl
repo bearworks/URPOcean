@@ -21,7 +21,7 @@ struct WaveStruct
 	float da;
 };
 
-WaveStruct GerstnerWave(half2 pos, half amplitude, half direction, half wavelength)
+WaveStruct GerstnerWave(half2 pos, half amplitude, half2 direction, half wavelength)
 {
 	WaveStruct waveOut;
 
@@ -32,10 +32,7 @@ WaveStruct GerstnerWave(half2 pos, half amplitude, half direction, half waveleng
 	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
 	half qia = peak / w;
 
-	direction = radians(direction); // convert the incoming degrees to radians, for directional waves
-	half2 dirWaveInput = half2(sin(direction), cos(direction));
-
-	half2 windDir = normalize(dirWaveInput); // calculate wind direction
+	half2 windDir = direction; // calculate wind direction
 	half dir = dot(windDir, pos); // calculate a gradient along the wind direction
 
 	////////////////////////////position output calculations/////////////////////////
@@ -97,7 +94,7 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
 	{
 		waves[i] = GerstnerWave(pos,
         						waveData[i].x, 
-        						waveData[i].y, 
+        						waveData[i].yw, 
         						waveData[i].z); // calculate the wave
 		waveOut.position += waves[i].position; // add the position
 		waveOut.normal += waves[i].normal; // add the normal
@@ -118,7 +115,7 @@ inline void SampleWaves(float2 position, out WaveStruct waveOut)
 
 }
 
-half3 GerstnerWavePos(half2 pos, half amplitude, half direction, half wavelength)
+half3 GerstnerWavePos(half2 pos, half amplitude, half2 direction, half wavelength)
 {
 	////////////////////////////////wave value calculations//////////////////////////
 	half3 wave = 0; // wave vector
@@ -127,10 +124,7 @@ half3 GerstnerWavePos(half2 pos, half amplitude, half direction, half wavelength
 	half peak = _Choppiness; // peak value, 1 is the sharpest peaks
 	half qia = peak / w;
 
-	direction = radians(direction); // convert the incoming degrees to radians, for directional waves
-	half2 dirWaveInput = half2(sin(direction), cos(direction));
-
-	half2 windDir = normalize(dirWaveInput); // calculate wind direction
+	half2 windDir = direction; // calculate wind direction
 	half dir = dot(windDir, pos); // calculate a gradient along the wind direction
 
 	////////////////////////////position output calculations/////////////////////////
@@ -155,7 +149,7 @@ inline void SampleWavesPos(float2 position, out float3 waveOut)
 	{
 		waves[i] = GerstnerWavePos(pos,
 			waveData[i].x,
-			waveData[i].y,
+			waveData[i].yw,
 			waveData[i].z); // calculate the wave
 
 		waveOut += waves[i]; // add the position
