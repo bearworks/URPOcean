@@ -400,7 +400,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half2 slope = 0;
 	half4 c = tex2D(_Map0, i.bumpCoords.xy);
 	slope += c.xy;
-	
+	slope += c.zw;
+
 #if defined (_WATERWAVE_ON)
 	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, ior);
 	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;

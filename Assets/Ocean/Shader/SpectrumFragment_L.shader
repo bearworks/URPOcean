@@ -102,8 +102,16 @@ Shader "URPOcean/SpectrumFragment_L" {
 	//			//displace
 	//			OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
 	//#else
-				//normal only
-				OUT = float4(n2 + n3, 0, 0);
+
+				float2 b2 = COMPLEX(k2.y * h2) + k2.x * h2;
+				float2 b3 = COMPLEX(k3.y * h3) + k3.x * h3;
+
+				float choppiness = 1;
+				float ik2 = choppiness / max(g, 0.01);
+				float ik3 = choppiness / max(b, 0.01);
+
+				//normal and binormal disturbs
+				OUT = float4(n2 + n3, b2 * k2.x * ik2 + b3 * k3.x * ik3);
 	//#endif
 				return OUT;
 			}
