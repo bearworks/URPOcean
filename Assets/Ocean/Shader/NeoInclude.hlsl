@@ -277,39 +277,22 @@ float3 SSRRayMarch(float3 worldPos, float3 reflection)
 
 		if (farDepth > startClipPos.w)
 		{
-			return float3(farScreenPos.xy, 1);
+			half2 screenUV = farScreenPos * 2 - 1;
+			screenUV *= screenUV;
+
+			return float3(farScreenPos.xy, saturate(1 - dot(screenUV, screenUV)));
 		}
 	}
 
 	return float3(0, 0, 0);
 }
 
-float3 GetSSRUVZ(float2 screenUV, float fresnel, float3 worldPos, float3 reflection)
+
+half4 GetSSRLighting(float3 worldPos, float3 reflection)
 {
-	screenUV = screenUV * 2 - 1;
-	screenUV *= screenUV;
+	float3 uvz = SSRRayMarch(worldPos, reflection);
 
-	half ssrWeight = saturate(1 - dot(screenUV, screenUV));
-
-	ssrWeight *= fresnel;
-
-	if (ssrWeight > 0.005)
-	{
-		float3 uvz = SSRRayMarch(worldPos, reflection);
-		uvz.z *= ssrWeight;
-		return uvz;
-	}
-
-	return float3(0, 0, 0);
-}
-
-half4 GetSSRLighting(float2 screenUV, float fresnel, float3 worldPos, float3 reflection)
-{
-	float3 uvz = GetSSRUVZ(screenUV, fresnel, worldPos, reflection);
-
-	half3 ssrColor = lerp(half3(0, 0, 0), SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uvz.xy), uvz.z > 0);
-
-	return half4(ssrColor, uvz.z);
+	return half4(SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, uvz.xy).rgb, uvz.z);
 }
 #endif
 
@@ -492,8 +475,8 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 #if defined(_SSREFLECTION_ON)
 	half3 reflectVector = normalize(reflect(-viewVector, normalize(lerp(WORLD_UP, worldNormal, REALTIME_DISTORTION * fade * 2))));
-	half4 SSReflections = GetSSRLighting(ior, fresnelFac, i.worldPos.xyz, reflectVector);
-	rtReflections = lerp(lerp(rtReflections, SSReflections, SSReflections.a), SSReflections, SSReflections.a > 0.99);
+	half4 SSReflections = GetSSRLighting(i.worldPos.xyz, reflectVector);
+	rtReflections = lerp(rtReflections, SSReflections, SSReflections.a * fresnelFac);
 #endif
 
 	// base, depth & reflection colors
