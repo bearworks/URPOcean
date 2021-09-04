@@ -38,6 +38,7 @@ Shader "URPOcean/SpectrumFragment_L" {
 			float2 GetSpectrum(float w, float2 s0, float2 s0c) 
 			{
 				float w_T = w * _T;
+				//this is cos wave compare with gerstner sin waves
 			    float c = cos(w_T);
 			    float s = sin(w_T);
 			    return float2((s0.x + s0c.x) * c - (s0.y + s0c.y) * s, (s0.x - s0c.x) * s + (s0.y - s0c.y) * c);
@@ -103,8 +104,8 @@ Shader "URPOcean/SpectrumFragment_L" {
 	//			OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
 	//#else
 
-				float2 b2 = COMPLEX(k2.y * h2) + k2.x * h2;
-				float2 b3 = COMPLEX(k3.y * h3) + k3.x * h3;
+				float2 b2 = -(COMPLEX(k2.y * h2) + k2.x * h2);
+				float2 b3 = -(COMPLEX(k3.y * h3) + k3.x * h3);
 
 				float choppiness = 1;
 				float ik2 = choppiness / max(g, 0.01);

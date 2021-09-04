@@ -1583,7 +1583,7 @@ MonoBehaviour:
     choppiness: 1.663
   detailWaves:
     fftresolution: 128
-    worldSize: 17.6
+    worldSize: 15
     windSpeed: 2.68
     waveAmp: 1.42
     waveFlow: 0.712
