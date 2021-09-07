@@ -101,7 +101,7 @@ Shader "URPOcean/SpectrumFragment_L" {
 	//			float ik3 = choppiness / max(b, 0.01);
 
 	//			//displace
-	//			OUT = float4(h2 + h3, n2 * ik2 + n3 * ik3);
+	//			OUT = float4(h2 + COMPLEX(h3), n2 * ik2 + n3 * ik3);
 	//#else
 
 				//reverse binormals
@@ -109,8 +109,8 @@ Shader "URPOcean/SpectrumFragment_L" {
 				float2 b3 = (COMPLEX(k3.y * h3) + k3.x * h3);
 
 				float choppiness = 1;
-				float ik2 = choppiness / max(g, 0.01);
-				float ik3 = choppiness / max(b, 0.01);
+				float ik2 = choppiness / max(k22, 0.01);
+				float ik3 = choppiness / max(k33, 0.01);
 
 				//normal and binormal disturbs
 				OUT = float4(n2 + n3, b2 * k2.x * ik2 + b3 * k3.x * ik3);
