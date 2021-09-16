@@ -568,6 +568,12 @@ namespace NOcean
                choppiness != basicWaves.choppiness)
             {
                 SetupWaves();
+
+                amplitude = basicWaves.amplitude;
+                direction = basicWaves.direction;
+                wavelength = basicWaves.wavelength;
+                choppiness = basicWaves.choppiness;
+
                 ForceReload(false);
             }
 
@@ -740,17 +746,17 @@ namespace NOcean
             {
                 float p = Mathf.Lerp(0.5f, 1.5f, (float)i * r);
                 float amp = a * p * UnityEngine.Random.Range(0.8f, 1.2f);
-                float dir = d + UnityEngine.Random.Range(-45f, 45f);
-                float len = l * p * UnityEngine.Random.Range(0.6f, 1.4f);
+                float dir = d + UnityEngine.Random.Range(-60f, 60f);
+                float len = l * p * UnityEngine.Random.Range(0.8f, 1.2f);
                 _waves[i] = new Wave(amp, dir, len, basicWaves.choppiness);
                 UnityEngine.Random.InitState(randomSeed + i + 1);
             }
             UnityEngine.Random.state = backupSeed;
         }
 
+        Vector4[] waveData = new Vector4[BasicWaves.numWaves];
         public Vector4[] GetWaveData()
         {
-            Vector4[] waveData = new Vector4[BasicWaves.numWaves];
             for (int i = 0; i < _waves.Length; i++)
             {
                 waveData[i] = new Vector4(_waves[i].amplitude, _waves[i].direction.x, _waves[i].wavelength, _waves[i].direction.y);
