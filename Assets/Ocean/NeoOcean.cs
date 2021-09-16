@@ -746,8 +746,8 @@ namespace NOcean
             {
                 float p = Mathf.Lerp(0.5f, 1.5f, (float)i * r);
                 float amp = a * p * UnityEngine.Random.Range(0.8f, 1.2f);
-                float dir = d + UnityEngine.Random.Range(-60f, 60f);
-                float len = l * p * UnityEngine.Random.Range(0.8f, 1.2f);
+                float dir = d + UnityEngine.Random.Range(-45f, 45f);
+                float len = l * p * UnityEngine.Random.Range(0.6f, 1.4f);
                 _waves[i] = new Wave(amp, dir, len, basicWaves.choppiness);
                 UnityEngine.Random.InitState(randomSeed + i + 1);
             }
