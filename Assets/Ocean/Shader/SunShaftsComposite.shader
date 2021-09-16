@@ -46,7 +46,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 
 		half4 colorB = SAMPLE_TEXTURE2D_X(_ColorBuffer, sampler_PointClamp, i.uv.xy);
 
-		half4 depthMask = saturate (colorB * _MainLightColor);
+		half4 depthMask = saturate (colorB * min(_MainLightColor, 1));
 		return 1.0f - (1.0f-colorA) * (1.0f-depthMask);	
 	}
 
@@ -54,7 +54,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	{ 
 		half4 colorA = SAMPLE_TEXTURE2D_X(_MainTex, sampler_PointClamp, i.uv.xy);
 		half4 colorB = SAMPLE_TEXTURE2D_X(_ColorBuffer, sampler_PointClamp, i.uv.xy);
-		half4 depthMask = saturate (colorB * _MainLightColor);
+		half4 depthMask = saturate (colorB * min(_MainLightColor,1));
 		return colorA + depthMask;	
 	}
 	

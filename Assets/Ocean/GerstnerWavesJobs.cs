@@ -279,12 +279,15 @@ namespace NOcean
 
                         ////////////////////////////position output calculations/////////////////////////
                         var calc = dir * w + -time * wSpeed; // the wave calculation
+
                         var cosCalc = math.cos(calc); // cosine version(used for horizontal undulation)
                         var sinCalc = math.sin(calc); // sin version(used for vertical undulation)
 
+                        float sa = math.clamp(amplitude * 10000, 0, 1);
+
                         // calculate the offsets for the current point
-                        wavePos.x += qia * windDir.x * cosCalc;
-                        wavePos.z += qia * windDir.y * cosCalc;
+                        wavePos.x += qia * windDir.x * sa;
+                        wavePos.z += qia * windDir.y * sa;
                         wavePos.y += ((sinCalc * amplitude)) * waveCountMulti; // the height is divided by the number of waves 
 
                         if (normal == 1)
@@ -297,6 +300,7 @@ namespace NOcean
                             waveNorm += (norm * waveCountMulti) * amplitude;
                         }
                     }
+
                     outPosition[i] = wavePos;
                     if (normal == 1)
                     {

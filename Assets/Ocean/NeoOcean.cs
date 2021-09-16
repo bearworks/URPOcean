@@ -568,6 +568,12 @@ namespace NOcean
                choppiness != basicWaves.choppiness)
             {
                 SetupWaves();
+
+                amplitude = basicWaves.amplitude;
+                direction = basicWaves.direction;
+                wavelength = basicWaves.wavelength;
+                choppiness = basicWaves.choppiness;
+
                 ForceReload(false);
             }
 
@@ -748,9 +754,9 @@ namespace NOcean
             UnityEngine.Random.state = backupSeed;
         }
 
+        Vector4[] waveData = new Vector4[BasicWaves.numWaves];
         public Vector4[] GetWaveData()
         {
-            Vector4[] waveData = new Vector4[BasicWaves.numWaves];
             for (int i = 0; i < _waves.Length; i++)
             {
                 waveData[i] = new Vector4(_waves[i].amplitude, _waves[i].direction.x, _waves[i].wavelength, _waves[i].direction.y);
