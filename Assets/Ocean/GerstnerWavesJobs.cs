@@ -15,7 +15,7 @@ namespace NOcean
     public class WaterSurfaceData : ScriptableObject
     {
         public List<Wave> _waves = new List<Wave>();
-        public BasicWaves _basicWaveSettings = new BasicWaves(1.5f, 45.0f, 5.0f, 1.5f);
+        public BasicWaves _basicWaveSettings = new BasicWaves(1.5f, 45.0f, 5.0f, 1.5f, 0);
     }
 
     [System.Serializable]
@@ -48,17 +48,20 @@ namespace NOcean
         [Range(1, 2)]
         public float choppiness = 1.5f;
 
+        public int randomSeed = 0;
+
         public BasicWaves()
         {
         }
 
-        public BasicWaves(float amp, float dir, float len, float chopp)
+        public BasicWaves(float amp, float dir, float len, float chopp, int random)
         {
             amplitude = amp;
             direction = dir;
             wavelength = len;
             choppiness = chopp;
-        }
+            randomSeed = random;
+    }
     }
 
     public static class GerstnerWavesJobs

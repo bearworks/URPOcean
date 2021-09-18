@@ -72,6 +72,7 @@ namespace NOcean
         private float direction = 0.1f;
         private float wavelength = 2f;
         private float choppiness = 1.5f;
+        private int randomSeed = 0;
 
         public BasicWaves basicWaves;
 
@@ -115,8 +116,6 @@ namespace NOcean
 
         [NonSerialized]
         public Wave[] _waves;
-
-        public int randomSeed = 0;
 
         private NeoNormalGrid mainPGrid;
 
@@ -565,7 +564,8 @@ namespace NOcean
             if(amplitude != basicWaves.amplitude ||
                direction != basicWaves.direction ||
                wavelength != basicWaves.wavelength ||
-               choppiness != basicWaves.choppiness)
+               choppiness != basicWaves.choppiness ||
+               randomSeed != basicWaves.randomSeed)
             {
                 SetupWaves();
 
@@ -573,6 +573,7 @@ namespace NOcean
                 direction = basicWaves.direction;
                 wavelength = basicWaves.wavelength;
                 choppiness = basicWaves.choppiness;
+                randomSeed = basicWaves.randomSeed;
 
                 ForceReload(false);
             }
@@ -733,7 +734,7 @@ namespace NOcean
         {
             //create basic waves based off basic wave settings
             UnityEngine.Random.State backupSeed = UnityEngine.Random.state;
-            UnityEngine.Random.InitState(randomSeed);
+            UnityEngine.Random.InitState(basicWaves.randomSeed);
             float a = basicWaves.amplitude;
             float d = basicWaves.direction;
             float l = basicWaves.wavelength;
@@ -749,7 +750,7 @@ namespace NOcean
                 float dir = d + UnityEngine.Random.Range(-45f, 45f);
                 float len = l * p * UnityEngine.Random.Range(0.6f, 1.4f);
                 _waves[i] = new Wave(amp, dir, len, basicWaves.choppiness);
-                UnityEngine.Random.InitState(randomSeed + i + 1);
+                UnityEngine.Random.InitState(basicWaves.randomSeed + i + 1);
             }
             UnityEngine.Random.state = backupSeed;
         }
