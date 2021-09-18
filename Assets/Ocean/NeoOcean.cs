@@ -693,7 +693,7 @@ namespace NOcean
         {
             CheckParams();
 
-            if (matSpectrum_l == null)
+            if (matSpectrum_l == null || m_fourierBuffer0 == null)
                 return;
 
             if (bChangeBuffer)
