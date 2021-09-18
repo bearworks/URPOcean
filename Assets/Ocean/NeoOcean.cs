@@ -559,7 +559,8 @@ namespace NOcean
         public void CheckParams()
         {
 #if UNITY_EDITOR
-            CheckRT();
+            if(debug)
+               CheckRT();
 #endif
             if(amplitude != basicWaves.amplitude ||
                direction != basicWaves.direction ||
