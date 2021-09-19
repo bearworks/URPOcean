@@ -183,8 +183,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8505a513c9c72294783ef1fe7c02a722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engineForce: 2
-  engineTorque: 2
+  engineForce: 5
+  engineTorque: 5
   rig: {fileID: 0}
   traker: {fileID: 0}
 --- !u!114 &171224728
@@ -6765,7 +6765,7 @@ MonoBehaviour:
   radius: 1
   stickyness: 5
   slope: 10
-  drag: 0
+  drag: 0.5
 --- !u!114 &1215563863030255762
 MonoBehaviour:
   m_ObjectHideFlags: 0
