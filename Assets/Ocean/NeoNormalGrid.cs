@@ -83,7 +83,7 @@ namespace NOcean
                     return;
             }
 
-            oceanMaterial.SetFloat("_InvNeoScale", 1f / scale);
+            oceanMaterial.SetFloat("_InvNeoScale", scale);
 
             oceanMaterial.SetTexture("_Map0", rt);
 

@@ -7,17 +7,6 @@ using Unity.Mathematics;
 
 namespace NOcean
 {
-    /// <summary>
-    /// This scriptable object contains setting for how the water looks visually
-    /// </summary>
-    [System.Serializable]
-    [CreateAssetMenu(fileName = "WaterSurfaceData", menuName = "WaterSystem/Surface Data", order = 0)]
-    public class WaterSurfaceData : ScriptableObject
-    {
-        public List<Wave> _waves = new List<Wave>();
-        public BasicWaves _basicWaveSettings = new BasicWaves(1.5f, 45.0f, 5.0f, 1.5f, 0);
-    }
-
     [System.Serializable]
     public struct Wave
     {
@@ -49,19 +38,6 @@ namespace NOcean
         public float choppiness = 1.5f;
 
         public int randomSeed = 0;
-
-        public BasicWaves()
-        {
-        }
-
-        public BasicWaves(float amp, float dir, float len, float chopp, int random)
-        {
-            amplitude = amp;
-            direction = dir;
-            wavelength = len;
-            choppiness = chopp;
-            randomSeed = random;
-    }
     }
 
     public static class GerstnerWavesJobs
