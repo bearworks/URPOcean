@@ -6671,6 +6671,7 @@ MonoBehaviour:
     direction: 78.9
     wavelength: 12.1
     choppiness: 1.46
+    randomSeed: 426
   detailWaves:
     fftresolution: 128
     worldSize: 14.93
@@ -6679,7 +6680,6 @@ MonoBehaviour:
     waveFlow: 0.626
     distort: {x: 1, y: 1}
   uniWaveSpeed: 0.4
-  randomSeed: 426
   shaderPack:
     spectruml_l: {fileID: 4800000, guid: a8f20ff6ce29711458e34a1d8adba5e5, type: 3}
     fourier_l: {fileID: 4800000, guid: b4cc16ffab55aae4fbebaaf3366da430, type: 3}
@@ -6786,7 +6786,7 @@ MonoBehaviour:
   _wakePrefab: {fileID: 1446377775785148, guid: 4394ba0ee57c9de498a475ab8103342f,
     type: 3}
   _genDistance: 2
-  _maxAge: 5
+  _maxAge: 10
   _speed: 1
 --- !u!4 &1244248574630880978
 Transform:

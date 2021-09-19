@@ -13,8 +13,8 @@ namespace NOcean
     {
         public List<Wake> _wakes = new List<Wake>(); // Wakes to create
         public GameObject _wakePrefab; // the wake prefab, preset linerenderer
-        public float _genDistance = 0.5f; // distance to make new segments
-        public float _maxAge = 5f; // how long the wake lasts for
+        public float _genDistance = 2f; // distance to make new segments
+        public float _maxAge = 10f; // how long the wake lasts for
         public float _speed = 3f; // how long the wake lasts for
 
         void OnEnable()
@@ -29,7 +29,6 @@ namespace NOcean
                     LineRenderer LR = go.GetComponent<LineRenderer>();
                     wl.points = new List<WakePoint>();
                     wl._lineRenderer = LR;
-                    wl.guid = GerstnerWavesJobs.GenId();
                     wl.go = go;
                     w.lines.Add(wl);
                     go.hideFlags = HideFlags.HideAndDontSave;
@@ -105,16 +104,13 @@ namespace NOcean
                         line.poses[i + 1] = line.points[i].pos;
                     }
 
-                    GerstnerWavesJobs.UpdateSamplePoints(line.poses, line.guid);
-                    GerstnerWavesJobs.GetData(line.guid, ref line.heights);
-
-                    origin.y = NeoOcean.oceanheight + line.heights[0].y;
+                    origin.y = NeoOcean.oceanheight;
                     for (var i = 0; i < pointCount; i++)
                     {
                         if (i + 1 == line.poses.Length)
                             break;
 
-                        line.points[i].pos.y = NeoOcean.oceanheight + line.heights[i + 1].y;
+                        line.points[i].pos.y = NeoOcean.oceanheight;
                     }
 
                     line._lineRenderer.SetPosition(0, origin);
@@ -194,9 +190,6 @@ namespace NOcean
             public float3[] poses = new float3[256];
             [System.NonSerialized]
             public float3[] heights = new float3[256];
-
-            [System.NonSerialized]
-            public int guid;
 
             [System.NonSerialized]
             public GameObject go = null;
