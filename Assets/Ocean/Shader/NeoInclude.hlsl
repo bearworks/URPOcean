@@ -447,7 +447,6 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	if (underwater)
 	{
 		worldNormal = -worldNormal;
-		worldNormal2 = -worldNormal2;
 	}
 
 	half4 rtReflections;
@@ -506,6 +505,12 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	baseColor = lerp(baseColor, lerp(shallowColor, refractions, pow(edge, _ShallowEdge)), edge);
 	
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
+	if (underwater)
+	{
+		Dir = refract(Dir, worldNormal2, 1 / 1.1);
+		worldNormal2 = -worldNormal2;
+		Dir = reflect(Dir, worldNormal2);
+	}
 	float spec = GGXSpecularDir(viewVector, worldNormal2, Dir);
 
 	// to get an effect when you see through the material
