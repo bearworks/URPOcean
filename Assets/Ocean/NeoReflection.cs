@@ -40,8 +40,14 @@ namespace NOcean
         
         private int2 m_OldReflectionTextureSize;
 
+        private int waterLayer = -1;
+        private int uiLayer = -1;
+
         private void OnEnable()
         {
+            waterLayer = LayerMask.GetMask("Water");
+            uiLayer = LayerMask.GetMask("UI");
+
             RenderPipelineManager.beginCameraRendering += ExecutePlanarReflections;
         }
 
@@ -121,7 +127,7 @@ namespace NOcean
             Vector4 clipPlane = CameraSpacePlane(m_ReflectionCamera, pos - Vector3.up * 0.1f, normal, 1.0f);
             Matrix4x4 projection = realCamera.CalculateObliqueMatrix(clipPlane);
             m_ReflectionCamera.projectionMatrix = projection;
-            m_ReflectionCamera.cullingMask = (int)m_settings.m_ReflectLayers; // never render water layer
+            m_ReflectionCamera.cullingMask = (int)m_settings.m_ReflectLayers & ~waterLayer; // never render water layer
             m_ReflectionCamera.transform.position = newpos;
         }
         
@@ -254,7 +260,31 @@ namespace NOcean
 
             m_ReflectionCamera.targetTexture = m_ReflectionTexture;
 
-            UniversalRenderPipeline.RenderSingleCamera(context, m_ReflectionCamera);
+            if(m_ReflectionCamera.cullingMask == 0 || m_ReflectionCamera.cullingMask == uiLayer)
+            {
+                //Camera setup some builtin variables e.g. camera projection matrices etc
+                context.SetupCameraProperties(m_ReflectionCamera);
+
+                //Get the setting from camera component
+                bool drawSkyBox = m_ReflectionCamera.clearFlags == CameraClearFlags.Skybox ? true : false;
+                bool clearDepth = m_ReflectionCamera.clearFlags == CameraClearFlags.Nothing ? false : true;
+                bool clearColor = m_ReflectionCamera.clearFlags == CameraClearFlags.Color ? true : false;
+
+                //Camera clear flag
+                CommandBuffer cmd = new CommandBuffer();
+                cmd.ClearRenderTarget(clearDepth, clearColor, m_ReflectionCamera.backgroundColor);
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Release();
+
+                //Skybox
+                if (drawSkyBox) { context.DrawSkybox(m_ReflectionCamera); }
+
+                context.Submit();
+            }
+            else
+            {
+                UniversalRenderPipeline.RenderSingleCamera(context, m_ReflectionCamera);
+            }
 
             GL.invertCulling = false;
             RenderSettings.fog = true;
