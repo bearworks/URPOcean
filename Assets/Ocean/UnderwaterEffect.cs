@@ -72,7 +72,7 @@ namespace NOcean
                     // but to assume enabled. In the future this could detect if camera is far enough under water, render a simple quad to avoid
                     // finding the intersection line.
                     _rend.enabled = true;
-                    break;
+                    //break;
                 }
             }
 

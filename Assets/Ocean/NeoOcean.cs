@@ -40,7 +40,7 @@ namespace NOcean
         public float worldSize = 20;
         [Range(1, 10)]
         public float windSpeed = 8.0f; //A higher wind speed gives greater swell to the waves
-        [Range(0.01f, 10)]
+        [Range(0.01f, 5f)]
         public float waveAmp = 1.0f; //Scales the height of the waves
         [Range(0.01f, 1)]
         public const float Omega = 0.84f;//A lower number means the waves last longer and will build up larger waves
@@ -67,11 +67,14 @@ namespace NOcean
 
         public NeoEnvParameters envParam = null;
         public static NeoOcean instance = null;
+		
+        public static float mainScale = 1f;
 
         private float amplitude = 0.5f;
         private float direction = 0.1f;
         private float wavelength = 2f;
         private float choppiness = 1.5f;
+        private int randomSeed = 0;
 
         public BasicWaves basicWaves;
 
@@ -88,7 +91,7 @@ namespace NOcean
         private int m_anisoLevel = 2;
         private float m_offset;
         private float m_worldfftSize = 20;
-        private Vector2 m_inverseWorldSizes;
+        private static Vector2 m_inverseWorldSizes;
         private float m_windSpeed = 8.0f;
         private float m_waveAmp = 1.0f;
         private float m_waveDirFlow = 0.0f;
@@ -115,8 +118,6 @@ namespace NOcean
 
         [NonSerialized]
         public Wave[] _waves;
-
-        public int randomSeed = 0;
 
         private NeoNormalGrid mainPGrid;
 
@@ -470,8 +471,7 @@ namespace NOcean
             }
         }
 
-
-        private Vector2 INVERSEV(float V)
+        private Vector2 InverseToScale(float V)
         {
             return new Vector2(1f / (V * octaveNum), 1f / V);
         }
@@ -522,6 +522,7 @@ namespace NOcean
 	    void Start()
 	    {
             CheckInstance(true);
+			
             SetupWaves();
 
             m_fftresolution = (int)GetFFTResolution();
@@ -534,7 +535,7 @@ namespace NOcean
             //m_Omega = fftParam.Omega;
             m_waveDirFlow = detailWaves.waveFlow;
 
-            m_inverseWorldSizes = INVERSEV(m_worldfftSize);
+            m_inverseWorldSizes = InverseToScale(m_worldfftSize);
 
             GenBuffer();
         }
@@ -560,12 +561,14 @@ namespace NOcean
         public void CheckParams()
         {
 #if UNITY_EDITOR
-            CheckRT();
+            if(debug)
+               CheckRT();
 #endif
             if(amplitude != basicWaves.amplitude ||
                direction != basicWaves.direction ||
                wavelength != basicWaves.wavelength ||
-               choppiness != basicWaves.choppiness)
+               choppiness != basicWaves.choppiness ||
+               randomSeed != basicWaves.randomSeed)
             {
                 SetupWaves();
 
@@ -573,6 +576,7 @@ namespace NOcean
                 direction = basicWaves.direction;
                 wavelength = basicWaves.wavelength;
                 choppiness = basicWaves.choppiness;
+                randomSeed = basicWaves.randomSeed;
 
                 ForceReload(false);
             }
@@ -589,7 +593,7 @@ namespace NOcean
             if (m_worldfftSize != worldsize)
             {
                 m_worldfftSize = worldsize;
-                m_inverseWorldSizes = INVERSEV(m_worldfftSize);
+                m_inverseWorldSizes = InverseToScale(m_worldfftSize);
 
                 ForceReload(false);
                 return;
@@ -657,16 +661,15 @@ namespace NOcean
         void LateUpdate()
         {
             GerstnerWavesJobs.UpdateHeights();
-
             if (!CheckInstance(false))
                 return;
+
+            mainScale = m_inverseWorldSizes.y;
 
             var _e = grids.GetEnumerator();
             while (_e.MoveNext())
             {
-                float scale = m_worldfftSize;
-
-                _e.Current.SetupMaterial(m_map0, scale);
+                _e.Current.SetupMaterial(m_map0, mainScale);
             }
 
             if (m_queueNode != null)
@@ -692,7 +695,7 @@ namespace NOcean
         {
             CheckParams();
 
-            if (matSpectrum_l == null)
+            if (matSpectrum_l == null || m_fourierBuffer0 == null)
                 return;
 
             if (bChangeBuffer)
@@ -733,7 +736,7 @@ namespace NOcean
         {
             //create basic waves based off basic wave settings
             UnityEngine.Random.State backupSeed = UnityEngine.Random.state;
-            UnityEngine.Random.InitState(randomSeed);
+            UnityEngine.Random.InitState(basicWaves.randomSeed);
             float a = basicWaves.amplitude;
             float d = basicWaves.direction;
             float l = basicWaves.wavelength;
@@ -749,7 +752,7 @@ namespace NOcean
                 float dir = d + UnityEngine.Random.Range(-45f, 45f);
                 float len = l * p * UnityEngine.Random.Range(0.6f, 1.4f);
                 _waves[i] = new Wave(amp, dir, len, basicWaves.choppiness);
-                UnityEngine.Random.InitState(randomSeed + i + 1);
+                UnityEngine.Random.InitState(basicWaves.randomSeed + i + 1);
             }
             UnityEngine.Random.state = backupSeed;
         }

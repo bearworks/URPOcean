@@ -180,7 +180,7 @@
 
 				float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv + distort.xy), _ZBufferParams);
 
-				return lerp(_BaseColor, color, saturate((1 - depth) * _DepthFade));
+				return lerp(_BaseColor, color, saturate(exp(-1000 * depth * _DepthFade)));
 			}
 			ENDHLSL
 		}

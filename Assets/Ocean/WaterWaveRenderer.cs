@@ -325,10 +325,9 @@ public class WaterWaveRenderer : WaveRenderer
             cmdBuffer.SetViewport(new Rect(0f, 0f, trailmap.width, trailmap.height));
             cmdBuffer.SetViewProjectionMatrices(trailCamera.worldToCameraMatrix, trailCamera.projectionMatrix);
 
-            if (Application.isEditor)
-            {
-                RefreshRenderers();
-            }
+#if UNITY_EDITOR
+            RefreshRenderers();
+#endif
 
             //render
             foreach (Renderer rd in rds)

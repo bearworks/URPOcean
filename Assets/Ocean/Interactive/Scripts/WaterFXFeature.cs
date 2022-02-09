@@ -53,16 +53,15 @@ namespace WaterSystem
 
             using (new ProfilingScope(cmd, new ProfilingSampler(k_RenderWaterFXTag)))
             {
-                context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
                 var drawSettings = CreateDrawingSettings(m_WaterFXShaderTag, ref renderingData, SortingCriteria.CommonTransparent);
                 var filteringSettings = transparentFilterSettings;
 
                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filteringSettings);
+                context.ExecuteCommandBuffer(cmd);
             }
-            
-            context.ExecuteCommandBuffer(cmd);
+
             CommandBufferPool.Release(cmd);
         }
 

@@ -1588,7 +1588,7 @@ MonoBehaviour:
     waveAmp: 1.42
     waveFlow: 0.712
     distort: {x: 1, y: 1}
-  uniWaveSpeed: 0.29
+  uniWaveSpeed: 0.65
   randomSeed: 380
   shaderPack:
     spectruml_l: {fileID: 4800000, guid: a8f20ff6ce29711458e34a1d8adba5e5, type: 3}
