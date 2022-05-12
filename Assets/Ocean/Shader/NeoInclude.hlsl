@@ -124,12 +124,12 @@ half _InvNeoScale;
 half4 _SpecularColor;
 half4 _BaseColor;
 half4 _ShallowColor;
-half _ShallowEdge;
+half _ShallowDepth;
+half _Transparency;
 half _Fresnel;
 half _Shadow;
 
-// edge & shore fading
-half _AboveDepth;
+half _Depth;
 float4 _FoamPeak;
 float _Fade;
 
@@ -504,9 +504,13 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	half4 refractions = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, refrCoord);
 
-	float edge = exp2(-_AboveDepth * depth);
+	float edge = exp2(-_Depth * depth);
 
-	baseColor = lerp(baseColor, lerp(shallowColor, refractions, pow(edge, _ShallowEdge)), edge);
+	float depthScatter = saturate(depth / _ShallowDepth);
+
+	baseColor = lerp(shallowColor, baseColor, depthScatter);
+
+	baseColor = lerp(baseColor, refractions, saturate(exp(-_Transparency * depth)));
 	
 	float3 Dir = normalize(i.worldPos.xyz - _WorldLightPos.xyz);
 	if (underwater)

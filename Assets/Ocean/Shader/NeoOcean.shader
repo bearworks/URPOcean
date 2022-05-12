@@ -4,10 +4,11 @@ Properties {
 	_ShallowColor ("Shallow color", COLOR)  = ( .10, .4, .43, 1)	
 
 	_DistortParams ("Refract, Reflect, Normal Power, Normal Sharp Bias", Vector) = (0.05 , 0.05, 4.0, 3.0)
-	_AboveDepth ("Depth", Range (0.1, 1)) = 0.3
-	_ShallowEdge("Shallow", Range(0.1, 3)) = 0.5
+	_Depth("Depth", Range(0.01, 5)) = 1
+	_ShallowDepth("Shallow", Range(0.1, 10)) = 5
+	_Transparency("Transparency", Range(0.1, 1)) = 0.5
 
-	_Fresnel("Fresnel", Range(-0.5, 0.5)) = 0.04
+	_Fresnel("Fresnel", Range(0.02, 0.5)) = 0.04
 	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
 	_Fade ("Fade", Range (0.001, 0.03)) = 0.002
 	
