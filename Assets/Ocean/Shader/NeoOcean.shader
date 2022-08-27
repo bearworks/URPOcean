@@ -12,7 +12,7 @@ Properties {
 	_Shadow("Shadow", Range(0.1, 0.9)) = 0.35
 	_Fade ("Fade", Range (0.001, 0.03)) = 0.002
 	
-	_FoamMask("Foam Mask (Peak(R) FX(B) Shore(G))", 2D) = "black" {}
+	_FoamMask("Foam Mask (Tail(R) FX(B) Shore(G))", 2D) = "black" {}
 
 	_FoamPeak("Foam Peak (Blend & Scale & Attetion & Edge)", Vector) = (1, 1, 1, 1)
 	_Foam ("Foam Intensity, Depth, Appear, Distort", Vector) = (1, 1, 0.5, 0.1)

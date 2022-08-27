@@ -198,7 +198,7 @@ struct v2f_MQ
 	float4 worldPos : TEXCOORD0;
 	float4 bumpCoords : TEXCOORD1;
 	float4 screenPos : TEXCOORD2;
-	float3 normalInterpolator : TEXCOORD3;
+	float4 normalInterpolator : TEXCOORD3;
 #ifdef USE_TANGENT
 	float3 tanInterpolator : TEXCOORD4;
 	float3 binInterpolator : TEXCOORD5;
@@ -355,7 +355,8 @@ v2f_MQ vert_MQ(appdata_v vert)
 
 	o.screenPos = ComputeScreenPos(o.pos);
 
-	o.screenPos.z = lerp(saturate(_FoamPeak.y * wave.da), exp2((wave.position.y - length(wave.position.xz) * _FoamPeak.w) * _FoamPeak.z), _FoamPeak.x);
+	o.screenPos.z = exp2((wave.position.y - length(wave.position.xz) * _FoamPeak.w) * _FoamPeak.z) * _FoamPeak.x;
+	o.normalInterpolator.w = (_FoamPeak.y * wave.da);
 
 	float2 tileableUv = worldSpaceVertex.xz;
 	float2 tileableUvScale = tileableUv * _InvNeoScale;;
@@ -443,7 +444,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half3 worldUp = WORLD_UP;
 	// shading for fresnel 
 	worldNormal = normalize(lerp(worldUp, worldNormal, fade));
-	worldNormal2 = normalize(worldNormal2);
+	worldNormal2 = normalize(lerp(worldNormal, worldNormal2, fade));
 
 	if (underwater)
 	{
@@ -541,7 +542,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half shoreDepth = exp2(-_Foam.y * depth);
 	float maxInt = saturate(max(shoreDepth * (1 - fresnelFac), height));
 	half shoreFoam = (sin(_WaveTime * _FoamMask_ST.z + maxInt * _FoamMask_ST.w) * _Foam.z + 1) * maxInt * foamMap.b;
-	half peakFoam = height * foamMap.r * phase;
+	half peakFoam = (height * lerp(0.5, foamMap.b, fade) + i.normalInterpolator.w * foamMap.g)* phase;
 
     baseColor += min(max(max(fxFoam.rrrr, peakFoam.rrrr), shoreFoam.rrrr) * _Foam.x * fade, 2) * shadow;
 

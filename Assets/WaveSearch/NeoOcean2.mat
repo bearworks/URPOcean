@@ -33,7 +33,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _FoamMask:
         m_Texture: {fileID: 2800000, guid: 927dfb18f58518e4fad57e1f03664774, type: 3}
-        m_Scale: {x: 4, y: 4}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 3, y: 2.59}
     - _FoamTex:
         m_Texture: {fileID: 2800000, guid: 1da473d0f1469374fb768a9a25db0ec5, type: 3}
@@ -45,6 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AboveDepth: 0.457
+    - _Depth: 1
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
@@ -54,9 +55,11 @@ Material:
     - _POINTFORCES: 0
     - _PROJECTED: 1
     - _Shadow: 0.5
+    - _ShallowDepth: 5
     - _ShallowEdge: 2.124
     - _Shininess: 500
     - _SunIntensity: 0.36
+    - _Transparency: 0.5
     - _WaveBump: 0.66
     - _WaveFreq: 3
     - _WaveHeight: 1
@@ -65,10 +68,10 @@ Material:
     - _nSnell: 3
     m_Colors:
     - _BaseColor: {r: 0.07843137, g: 0.34630343, b: 0.35686275, a: 1}
-    - _DistortParams: {r: 0.02, g: 0.03, b: 1, a: 1}
+    - _DistortParams: {r: 0.02, g: 0.03, b: 2, a: 1}
     - _Foam: {r: 1, g: 0.2, b: 0.25, a: 0.1}
     - _FoamColor: {r: 0, g: 0.0038850456, b: 0.00712887, a: 1}
-    - _FoamPeak: {r: 0.5, g: 1, b: 12.6, a: 0.271}
+    - _FoamPeak: {r: 1, g: 2.3, b: 9.64, a: 1.04}
     - _HighColor: {r: 0, g: 0.75172424, b: 1, a: 0.29}
     - _ShallowColor: {r: 0.17254902, g: 0.25874087, b: 0.5529412, a: 1}
     - _WaveCoord: {r: 0, g: 0, b: 0, a: 0}

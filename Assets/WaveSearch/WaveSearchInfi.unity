@@ -274,7 +274,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 202720316}
   m_CullTransparentMesh: 0
---- !u!43 &748045256
+--- !u!43 &555656658
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -675,7 +675,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843753972}
-  m_Mesh: {fileID: 748045256}
+  m_Mesh: {fileID: 555656658}
 --- !u!4 &843753976
 Transform:
   m_ObjectHideFlags: 0
@@ -684,7 +684,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843753972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.3680805, z: -3.7587705}
+  m_LocalPosition: {x: 15.957395, y: 0.8908318, z: -11.844376}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -826,6 +826,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
   m_Antialiasing: 1
   m_AntialiasingQuality: 2
@@ -1577,19 +1578,19 @@ MonoBehaviour:
   envParam:
     sunLight: {fileID: 108219294922212976}
   basicWaves:
-    amplitude: 0.6
-    direction: 87.8
-    wavelength: 13.5
-    choppiness: 1.663
+    amplitude: 0.3
+    direction: 75
+    wavelength: 6.56
+    choppiness: 1.153
+    randomSeed: 28
   detailWaves:
     fftresolution: 128
-    worldSize: 15
-    windSpeed: 2.68
-    waveAmp: 1.42
+    worldSize: 27.6
+    windSpeed: 5.06
+    waveAmp: 1.61
     waveFlow: 0.712
     distort: {x: 1, y: 1}
-  uniWaveSpeed: 0.65
-  randomSeed: 380
+  uniWaveSpeed: 0.498
   shaderPack:
     spectruml_l: {fileID: 4800000, guid: a8f20ff6ce29711458e34a1d8adba5e5, type: 3}
     fourier_l: {fileID: 4800000, guid: b4cc16ffab55aae4fbebaaf3366da430, type: 3}

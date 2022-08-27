@@ -45,6 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AboveDepth: 0.903
+    - _Depth: 1
     - _FOGFORCE: 1
     - _Fade: 0.03
     - _FoamDistort: 0.5
@@ -54,9 +55,11 @@ Material:
     - _POINTFORCES: 0
     - _PROJECTED: 0
     - _Shadow: 0.616
+    - _ShallowDepth: 5
     - _ShallowEdge: 0.737
     - _Shininess: 500
     - _SunIntensity: 0.2
+    - _Transparency: 0.5
     - _WaveBump: 0.66
     - _WaveFreq: 3
     - _WaveHeight: 1
