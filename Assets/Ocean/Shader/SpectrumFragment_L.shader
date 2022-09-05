@@ -37,7 +37,7 @@ Shader "URPOcean/SpectrumFragment_L" {
 			
 			float2 GetSpectrum(float w, float2 s0, float2 s0c) 
 			{
-				float w_T = w * (_T + 1e3);
+				float w_T = w * (_T + 1e2);
 				//this is cos wave compare with gerstner sin waves
 			    float c = cos(w_T);
 			    float s = sin(w_T);

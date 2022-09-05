@@ -6667,7 +6667,7 @@ MonoBehaviour:
   envParam:
     sunLight: {fileID: 108219294922212976}
   basicWaves:
-    amplitude: 1
+    amplitude: 0.75
     direction: 78.9
     wavelength: 12.1
     choppiness: 1.46
