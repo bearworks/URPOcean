@@ -48,7 +48,7 @@ Shader "URPOcean/SpectrumFragment_L" {
 			{
 			    return float2(-z.y, z.x); // returns i times z (complex number)
 			}
-			
+
 			float4 frag(v2f IN): SV_Target
 			{ 
 				float2 uv = IN.uv.xy - _Offset;
@@ -61,61 +61,19 @@ Shader "URPOcean/SpectrumFragment_L" {
 		    	float4 s12c = tex2D(_Spectrum01, -uv);
 
 			    float2 k2 = st * _InverseGridSizes.x;
-			    float2 k3 = st * _InverseGridSizes.y;
 
-				// float k1 = length(uv * inverseWorldSizes.x);
 				float k22 = length(k2);
-				float k33 = length(k3);
-				//float k4 = length(uv * inverseWorldSizes.w);
-
-				//float r = sqrt(9.81 * k1 * (1.0 + k1 * k1 / (WAVE_KM * WAVE_KM)));
 #if 1
 				float g = sqrt(9.81 * k22 * (1.0 + k22 * k22 / (WAVE_KM * WAVE_KM)));
-				float b = sqrt(9.81 * k33 * (1.0 + k33 * k33 / (WAVE_KM * WAVE_KM)));
 #else
 				float g = sqrt(9.81 * k22);
-				float b = sqrt(9.81 * k33);
 #endif
 
-#if 0
-				const float period = 10; //quantization
-				g /= period;
-				b /= period;
-				g -= frac(g);
-				b -= frac(b);
-				g *= period;
-				b *= period;
-#endif
-
-			    float2 h2 = GetSpectrum(g, s12.xy, s12c.xy);
-			   	float2 h3 = GetSpectrum(b, s12.zw, s12c.zw);
+			    float2 h2 = GetSpectrum(g, XDecodeFloatRG(s12), XDecodeFloatRG(s12c));
 			    
 				float2 n2 = COMPLEX(k2.x * h2) - k2.y * h2;
-				float2 n3 = COMPLEX(k3.x * h3) - k3.y * h3;
-	
-			    float4 OUT;
-			    
-	//#if 0
-	//			float choppiness = 1;
-	//			float ik2 = choppiness / max(g, 0.01);
-	//			float ik3 = choppiness / max(b, 0.01);
 
-	//			//displace
-	//			OUT = float4(h2 + COMPLEX(h3), n2 * ik2 + n3 * ik3);
-	//#else
-
-				//reverse binormals
-				float2 b2 = (COMPLEX(k2.y * h2) + k2.x * h2);
-				float2 b3 = (COMPLEX(k3.y * h3) + k3.x * h3);
-
-				float choppiness = 1;
-				float ik2 = choppiness / max(k22, 0.01);
-				float ik3 = choppiness / max(k33, 0.01);
-
-				//normal and binormal disturbs
-				OUT = float4(n2 + n3, b2 * k2.x * ik2 + b3 * k3.x * ik3);
-	//#endif
-				return OUT;
+				return XEncodeFloatRG(n2);
 			}
 			
 			ENDHLSL

@@ -38,9 +38,9 @@ namespace NOcean
         public eFFTResolution fftresolution = eFFTResolution.eFFT_NeoMedium;
 
         public float worldSize = 20;
-        [Range(1, 10)]
-        public float windSpeed = 8.0f; //A higher wind speed gives greater swell to the waves
-        [Range(0.01f, 5f)]
+        [Range(1, 5)]
+        public float windSpeed = 4.0f; //A higher wind speed gives greater swell to the waves
+        [Range(0.01f, 2f)]
         public float waveAmp = 1.0f; //Scales the height of the waves
         [Range(0.01f, 1)]
         public const float Omega = 0.84f;//A lower number means the waves last longer and will build up larger waves
@@ -177,6 +177,10 @@ namespace NOcean
 
             m_map0 = null;
 
+#if UNITY_EDITOR
+            RenderTexture.ReleaseTemporary(m_map1);
+            m_map1 = null;
+#endif
             DestroyImmediate(m_spectrum01);
 
             m_spectrum01 = null;
@@ -254,7 +258,7 @@ namespace NOcean
             if (!supportRT)
                 return;
 
-            RenderTextureFormat mapFormat = RenderTextureFormat.ARGBHalf;
+            RenderTextureFormat mapFormat = RenderTextureFormat.ARGB32;
 
             m_passes = (int)(Mathf.Log(m_fftresolution) / Mathf.Log(2.0f));
             m_butterflyLookupTable = new Texture2D[m_passes];
@@ -312,12 +316,13 @@ namespace NOcean
         public bool debug = false;
 
 #if UNITY_EDITOR
+        private RenderTexture m_map1;
         public void OnGUI()
         {
             if (debug)
             {
-                if (m_map0 != null)
-                    GUI.DrawTexture(new Rect(0, 0, m_map0.width * 2, m_map0.height * 2), m_map0, ScaleMode.ScaleToFit, false);
+                if (m_map1 != null)
+                    GUI.DrawTexture(new Rect(0, 0, m_map1.width * 2, m_map1.height * 2), m_map1, ScaleMode.ScaleToFit, false);
 
             }
         }
@@ -492,7 +497,7 @@ namespace NOcean
         public void CheckRT()
         {
             supportRT = needRT && SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth) &&
-             SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
+             SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGB32);
 
             if (supportRT)
             {
@@ -728,7 +733,17 @@ namespace NOcean
 
             if (count == 1)
             {
-                NeoOcean.Blit(m_fourierBuffer0[1], m_map0, null);
+               NeoOcean.Blit(m_fourierBuffer0[1], m_map0, null);
+
+#if UNITY_EDITOR
+               if(debug)
+               {
+                  RenderTexture.ReleaseTemporary(m_map1);
+                  m_map1 = RenderTexture.GetTemporary(m_map0.width, m_map0.height, 0, m_map0.format);
+                  matFourier_l.SetTexture("_ReadBuffer0", m_map0);
+                  NeoOcean.Blit(null, m_map1, matFourier_l, 2);
+               }
+#endif
             }
         }
 

@@ -374,6 +374,34 @@ bool IsUnderwater(const float facing)
 	return backface;
 }
 
+// Encoding/decoding [0..1) floats into 8 bit/channel RG. Note that 1.0 will not be encoded properly.
+float2 EncodeFloatRG( float v )
+{
+    float2 kEncodeMul = float2(1.0, 255.0);
+    float kEncodeBit = 1.0/255.0;
+    float2 enc = kEncodeMul * v;
+    enc = frac (enc);
+    enc.x -= enc.y * kEncodeBit;
+    return enc;
+}
+
+float DecodeFloatRG( float2 enc )
+{
+    float2 kDecodeDot = float2(1.0, 1/255.0);
+    return dot( enc, kDecodeDot );
+}
+
+float4 XEncodeFloatRG( float2 n )
+{
+    n.xy = n.xy * 0.5 + 0.5;
+	return float4(EncodeFloatRG(n.x), EncodeFloatRG(n.y));
+}
+
+float2 XDecodeFloatRG( float4 enc )
+{
+    return float2(DecodeFloatRG(enc.xy), DecodeFloatRG(enc.zw)) * 2 - 1;
+}
+
 half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 {
 	half2 ior = (i.screenPos.xy) / i.screenPos.w;
@@ -381,14 +409,11 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	bool underwater = IsUnderwater(facing);
 
 	// get tangent space basis    	
-	half2 slope = 0;
-	half4 c = tex2D(_Map0, i.bumpCoords.xy);
-	slope += c.xy;
-	slope += c.zw;
+	half2 slope = XDecodeFloatRG(tex2D(_Map0, i.bumpCoords.xy));
 
 #if defined (_WATERWAVE_ON)
 	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, ior);
-	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
+	slope += half2(1 - waterFX.y, 1 - waterFX.z) * 0.5;
 #endif
 	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
 	half3 worldNormal2 = (half3(-slope.x, NORMAL_SHARPBIAS, -slope.y)); //sharp normal

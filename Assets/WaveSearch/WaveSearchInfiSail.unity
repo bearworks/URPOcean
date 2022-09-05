@@ -5379,7 +5379,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843753972}
-  m_Mesh: {fileID: 919343490}
+  m_Mesh: {fileID: 1051403325}
 --- !u!4 &843753976
 Transform:
   m_ObjectHideFlags: 0
@@ -5531,6 +5531,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
   m_Antialiasing: 1
   m_AntialiasingQuality: 2
@@ -5541,7 +5542,7 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!43 &919343490
+--- !u!43 &1051403325
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6676,7 +6677,7 @@ MonoBehaviour:
     fftresolution: 128
     worldSize: 15.09
     windSpeed: 3.77
-    waveAmp: 1.37
+    waveAmp: 2
     waveFlow: 0.442
     distort: {x: 1, y: 1}
   uniWaveSpeed: 0.4

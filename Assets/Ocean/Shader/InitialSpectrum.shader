@@ -150,9 +150,8 @@
  			float2 rnd = float2(randrg(uv), randba(uv));
 
             float2 rg = GetSpectrumSample(uv, sampleFFTSize.x, sampleFFTSize.z, rnd.xy);
-            float2 ba = GetSpectrumSample(uv, sampleFFTSize.y, sampleFFTSize.w, rnd.yx);
 
-			return float4(rg, ba);
+			return XEncodeFloatRG(rg);
 		}
 		ENDHLSL
 		}

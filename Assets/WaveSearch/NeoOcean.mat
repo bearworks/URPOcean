@@ -201,7 +201,7 @@ Material:
     - _DepthColorFade: {r: 0.8880597, g: 0.27834705, b: 0.44463244, a: 0.22352941}
     - _Displacement: {r: 6.6371665, g: 20.353983, b: -1, a: -0.681416}
     - _DisplacementXz: {r: 0.6499999, g: -2.9203715, b: 1.6599998, a: -3.9363046}
-    - _DistortParams: {r: 0.01, g: 0.1, b: 3.62, a: 1}
+    - _DistortParams: {r: 0.01, g: 0.1, b: 1, a: 1}
     - _ExtinctColor: {r: 0.15, g: 0.03, b: 0.01, a: 0}
     - _Extinction: {r: 4.5, g: 75, b: 300, a: 1}
     - _Foam: {r: 1, g: 1.07, b: 0.25, a: 0.1}

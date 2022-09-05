@@ -24,15 +24,14 @@ Shader "URPOcean/Fourier_L"
 		return OUT;
 	}
 	
-	//Performs two FFTs on two complex numbers packed in a vector4
-	float4 FFT4(float2 w, float4 input1, float4 input2) 
+
+
+	float2 FFT2(float2 w, float2 input1, float2 input2) 
 	{
 		float rx = w.x * input2.x - w.y * input2.y;
 		float ry = w.y * input2.x + w.x * input2.y;
-		float rz = w.x * input2.z - w.y * input2.w;
-		float rw = w.y * input2.z + w.x * input2.w;
 
-		return input1 + float4(rx,ry,rz,rw);
+		return input1 + float2(rx,ry);
 	}
 
 	float4 fragX_L(v2f IN): SV_Target
@@ -44,14 +43,15 @@ Shader "URPOcean/Fourier_L"
 		
 		 w *= (lookUp.w * 2 - 1.0);
 		
-		float4 OUT;
-		
 		float2 uv1 = float2(lookUp.x, IN.uv.y);
 		float2 uv2 = float2(lookUp.y, IN.uv.y);
 		
-		OUT = FFT4(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
+		float4 raw1 = tex2D(_ReadBuffer0, uv1);
+		float4 raw2 = tex2D(_ReadBuffer0, uv2);
 
-		return OUT;
+		float2 OUT = FFT2(w, XDecodeFloatRG(raw1), XDecodeFloatRG(raw2));
+
+		return XEncodeFloatRG(OUT);
 	}
 	
 	float4 fragY_L(v2f IN): SV_Target
@@ -64,15 +64,23 @@ Shader "URPOcean/Fourier_L"
 		
 		w *= (lookUp.w * 2 - 1.0);
 		
-		float4 OUT;
-		
 		float2 uv1 = float2(IN.uv.x, lookUp.x);
 		float2 uv2 = float2(IN.uv.x, lookUp.y);
 		
-		OUT = FFT4(w, tex2D(_ReadBuffer0, uv1), tex2D(_ReadBuffer0, uv2));
+		float4 raw1 = tex2D(_ReadBuffer0, uv1);
+		float4 raw2 = tex2D(_ReadBuffer0, uv2);
 
-		return OUT;
+		float2 OUT = FFT2(w, XDecodeFloatRG(raw1), XDecodeFloatRG(raw2));
+
+		return XEncodeFloatRG(OUT);
 	}
+
+	float4 fragF(v2f IN): SV_Target
+	{
+		float4 raw1 = tex2D(_ReadBuffer0, IN.uv.xy);
+		return half4(XDecodeFloatRG(raw1), 0, 0);
+	}
+	
 	
 	ENDHLSL
 			
@@ -103,6 +111,22 @@ Shader "URPOcean/Fourier_L"
 			#pragma target 3.0
 			#pragma vertex vert
 			#pragma fragment fragY_L
+			#pragma exclude_renderers gles
+
+			#pragma fragmentoption ARB_precision_hint_fastest
+
+			ENDHLSL
+		}
+
+		Pass 
+    	{
+			ZTest Always Cull Off ZWrite Off
+      		Fog { Mode off }
+    		
+			HLSLPROGRAM
+			#pragma target 3.0
+			#pragma vertex vert
+			#pragma fragment fragF
 			#pragma exclude_renderers gles
 
 			#pragma fragmentoption ARB_precision_hint_fastest
