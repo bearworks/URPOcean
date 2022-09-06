@@ -560,7 +560,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half height = i.screenPos.z;
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb;
 #if defined (_WATERWAVE_ON)
-	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * edge, max(waterFX.r, k) * foamMap.r) * 2;
+	half fxFoam = max(length(waterFX.a * 2 - 1) * foamMap.g * edge, max(waterFX.r, k) * foamMap.r) * 2;
 #else
 	half fxFoam = foamMap.g * edge;
 #endif
