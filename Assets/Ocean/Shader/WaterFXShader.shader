@@ -82,7 +82,6 @@
 
 				half3 tNorm = half3(col.b, col.g, 1) * 2 - 1;
 
-				half3 viewDir = half3(input.normal.w, input.tangent.w, input.bitangent.w);
     			half3 normalWS = TransformTangentToWorld(tNorm, half3x3(input.tangent.xyz, input.bitangent.xyz, input.normal.xyz));
 
 				normalWS = lerp(half3(0, 1, 0), normalWS, input.color.g);
@@ -91,7 +90,7 @@
 				#ifdef _INVERT_ON
 				comp *= -1;
 				#endif
-
+				
 				return comp;
 			}
 			ENDHLSL

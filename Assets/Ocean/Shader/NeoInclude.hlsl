@@ -413,7 +413,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 #if defined (_WATERWAVE_ON)
 	half4 waterFX = SAMPLE_TEXTURE2D(_WaterFXMap, sampler_WaterFXMap, ior);
-	slope += half2(1 - waterFX.y, 1 - waterFX.z) * 0.5;
+	slope += half2(1 - waterFX.y, 1 - waterFX.z) - 0.5;
 #endif
 	half3 worldNormal = (half3(-slope.x, NORMAL_POWER, -slope.y)); //shallow normal
 	half3 worldNormal2 = (half3(-slope.x, NORMAL_SHARPBIAS, -slope.y)); //sharp normal
@@ -560,7 +560,7 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 	half height = i.screenPos.z;
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb;
 #if defined (_WATERWAVE_ON)
-	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * 10 * edge, max(waterFX.r, k) * foamMap.r) * 2;
+	half fxFoam = max(length(waterFX.a - 0.5) * foamMap.g * edge, max(waterFX.r, k) * foamMap.r) * 2;
 #else
 	half fxFoam = foamMap.g * edge;
 #endif
