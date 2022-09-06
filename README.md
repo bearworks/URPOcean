@@ -1,9 +1,9 @@
 # URPOcean
 
-Require Unity 2020.3.18f1 or later
+Require Unity 2020.3.18f1 (URP 10.x+) or later
 
 Suitable for wide-range mobile devices, hardware features need #pragma target 3.0 or higher.  
-Now support for gles 3.0 and gles2.0 ext(Experimental Option).
+Now support for gles 3.0 and gles2.0 ext(Experimental).
 
 ![](./Image/URPOcean.png)
 ![](./Image/URPOcean1.png)
