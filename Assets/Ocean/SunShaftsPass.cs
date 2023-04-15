@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.Universal
         RenderTargetIdentifier currentTarget;
 
         static readonly int MainTexId = Shader.PropertyToID("_MainTex");
-        static readonly int TempTargetId = Shader.PropertyToID("Destination");
+        static readonly int TempTargetId = Shader.PropertyToID("TempTargetId");
 
         public SunShaftsPass(RenderPassEvent evt, Shader sunShaftsPS)
         {
@@ -43,7 +43,6 @@ namespace UnityEngine.Rendering.Universal
 
             if (sunShaftsMaterial == null) return;
 
-            var cmd = CommandBufferPool.Get(k_RenderTag);
             if (RenderSettings.sun == null)
             {
                 return;
@@ -53,7 +52,7 @@ namespace UnityEngine.Rendering.Universal
             bool positiveZ = UpdateSun(renderingData.cameraData.camera, out vSun);
 
             int divider = 4;
-            if (m_SunShafts.resolution == SunShaftsResolution.Normal)
+            if (m_SunShafts.resolution.value == SunShaftsResolution.Normal)
                 divider = 2;
 
             if (!positiveZ)
@@ -61,6 +60,7 @@ namespace UnityEngine.Rendering.Universal
                 return;
             }
 
+            var cmd = CommandBufferPool.Get(k_RenderTag);
             float sradius = m_SunShafts.sunShaftBlurRadius.value;
 
             RenderTextureDescriptor desc = renderingData.cameraData.cameraTargetDescriptor;
@@ -83,6 +83,7 @@ namespace UnityEngine.Rendering.Universal
             // mask out everything except the skybox
             // we have 2 methods, one of which requires depth buffer support, the other one is just comparing images
 
+            material.SetFloat("_HighLightsThreshold",m_SunShafts.highLightsThreshold.value);
             material.SetVector("_SunPosition", new Vector4(vSun.x, vSun.y, vSun.z, m_SunShafts.maxRadius.value));
 
             cmd.Blit(TempTargetId, lrDepthBuffer, material, 2);
@@ -131,7 +132,7 @@ namespace UnityEngine.Rendering.Universal
 
             // put together:
             material.SetTexture("_ColorBuffer", lrDepthBuffer);
-            cmd.Blit(TempTargetId, destination, material, (m_SunShafts.screenBlendMode == ShaftsScreenBlendMode.Screen) ? 0 : 4);
+            cmd.Blit(TempTargetId, destination, material, (m_SunShafts.screenBlendMode.value == ShaftsScreenBlendMode.Screen) ? 0 : 4);
 
             RenderTexture.ReleaseTemporary(lrDepthBuffer);
 

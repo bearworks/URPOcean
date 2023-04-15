@@ -27,6 +27,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	half4 _BlurRadius4;
 	half4 _SunPosition;
 	half4 _MainTex_TexelSize;	
+	half _HighLightsThreshold;
 
 	#define SAMPLES_FLOAT 6.0f
 	#define SAMPLES_INT 6
@@ -82,7 +83,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	}	
 	
 	half4 TransformColor (half4 skyboxValue) {
-		return max (skyboxValue, 0); 		
+		return max(max (max(skyboxValue.r, skyboxValue.g), skyboxValue.b) - _HighLightsThreshold,0.0);
 	}
 	
 	half4 frag_depth (v2f i) : SV_Target {

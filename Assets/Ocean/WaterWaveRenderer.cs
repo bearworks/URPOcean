@@ -335,16 +335,13 @@ public class WaterWaveRenderer : WaveRenderer
                 if (rd == null)
                     continue;
 
-                for (int i = 0; i < rd.sharedMaterials.Length; i++)
+                for (int i = 0; i < matTrans.Count; i++)
                 {
-                    Material mat = rd.sharedMaterials[i];
+                    Material mat = matTrans[i];
                     if (mat == null)
                         continue;
                     
-                    if (matTrans.Contains(mat))
-                    {
-                        cmdBuffer.DrawRenderer(rd, matWriter, i, 0);
-                    }
+                    cmdBuffer.DrawRenderer(rd, matWriter, i, 0);
                 }
             }
 

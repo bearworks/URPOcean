@@ -26,6 +26,8 @@ namespace UnityEngine.Rendering.Universal
         [Range(0, 1)]
         public FloatParameter maxRadius = new FloatParameter(0.75f);
 
+        public ClampedFloatParameter highLightsThreshold = new ClampedFloatParameter(0.5f,0,0.99f);
+
         public BoolParameter lastBlur = new BoolParameter(false);
 
         public bool IsActive() => radialBlurIterations.value > 0;
