@@ -43,6 +43,7 @@ namespace WaterSystem
             cameraTextureDescriptor.height = cameraTextureDescriptor.height / 2;
             cameraTextureDescriptor.colorFormat = RenderTextureFormat.Default;
             cmd.GetTemporaryRT(m_WaterFX.id, cameraTextureDescriptor, FilterMode.Bilinear);
+            cmd.EnableShaderKeyword("_WATERFX_ON");
             ConfigureTarget(m_WaterFX.Identifier());
             ConfigureClear(ClearFlag.Color, m_ClearColor);
         }
@@ -67,6 +68,7 @@ namespace WaterSystem
 
         public override void FrameCleanup(CommandBuffer cmd)
         {
+            cmd.DisableShaderKeyword("_WATERFX_ON");
             cmd.ReleaseTemporaryRT(m_WaterFX.id);
         }
     }

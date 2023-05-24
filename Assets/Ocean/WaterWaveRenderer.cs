@@ -63,6 +63,15 @@ public class WaterWaveRenderer : WaveRenderer
     // Use this for initialization
     public void Start()
     {
+        bool supportRT = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RHalf) &&
+             SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
+
+        if (!supportRT)
+        {
+            enabled = false;
+            return;
+        }
+
         if (matWave == null)
         {
             matWave = new Material(shader);
