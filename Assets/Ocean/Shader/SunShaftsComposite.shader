@@ -32,7 +32,21 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 	#define SAMPLES_FLOAT 6.0f
 	#define SAMPLES_INT 6
 			
-	v2f vert(Attributes v ) 
+	struct XAttributes
+    {
+		float4 positionOS   : POSITION;
+		// The uv variable contains the UV coordinate on the texture for the
+		// given vertex.
+		float2 uv           : TEXCOORD0;
+    };
+
+	struct XVaryings
+	{
+		float4 positionCS : SV_POSITION;
+		float2 uv : TEXCOORD0;
+	};
+
+	v2f vert(XAttributes v ) 
 	{
 		v2f o;
 		o.pos = TransformObjectToHClip(v.positionOS.xyz);
@@ -59,7 +73,7 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		return colorA + depthMask;	
 	}
 	
-	v2f_radial vert_radial(Attributes v ) 
+	v2f_radial vert_radial(XAttributes v ) 
 	{
 		v2f_radial o;
 		o.pos = TransformObjectToHClip(v.positionOS.xyz);
@@ -108,9 +122,9 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		return outColor;
 	}
 
-	half4 FragBlurH(Varyings input) : SV_Target
+	half4 FragBlurH(XVaryings input) : SV_Target
 	{
-		UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+		//UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 		float texelSize = _MainTex_TexelSize.x;
 		float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
 
@@ -132,9 +146,9 @@ Shader "Hidden/Universal Render Pipeline/SunShaftsComposite" {
 		return half4(color,1);
 	}
 
-	half4 FragBlurV(Varyings input) : SV_Target
+	half4 FragBlurV(XVaryings input) : SV_Target
 	{
-		UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+		//UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 		float texelSize = _MainTex_TexelSize.y;
 		float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
 
