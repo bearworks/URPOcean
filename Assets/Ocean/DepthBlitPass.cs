@@ -1,4 +1,3 @@
-#if UNITY_2022_1_OR_NEWER
 using System;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.RenderGraphModule;
@@ -193,4 +192,3 @@ namespace UnityEngine.Rendering.Universal.Internal
         }
     }
 }
-#endif

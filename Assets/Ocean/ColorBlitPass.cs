@@ -1,4 +1,3 @@
-#if UNITY_2022_1_OR_NEWER
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -93,4 +92,3 @@ namespace UnityEngine.Rendering.Universal.Internal
         }
     }
 }
-#endif
