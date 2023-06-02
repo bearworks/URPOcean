@@ -329,8 +329,9 @@ namespace NOcean
 
             Plane UpperBoundPlane = new Plane(Vector3.up, up);
             Plane LowerBoundPlane = new Plane(Vector3.up, down);
-
-            Matrix4x4 invviewproj = (projectorCamera.projectionMatrix * projectorCamera.worldToCameraMatrix).inverse;
+            
+            Matrix4x4 projectionMatrix = Matrix4x4.Perspective(cam.fieldOfView, cam.aspect, cam.nearClipPlane, cam.farClipPlane);
+            Matrix4x4 invviewproj = (projectionMatrix * projectorCamera.worldToCameraMatrix).inverse;
             //into world space w = 1  
             frustum[0] = invviewproj.MultiplyPoint(new Vector3(-1, -1, -1));
             frustum[1] = invviewproj.MultiplyPoint(new Vector3(+1, -1, -1));
@@ -424,7 +425,7 @@ namespace NOcean
 
 	        projectorCamera.transform.forward = (aimpoint - projectorCamera.transform.position);
 
-            Matrix4x4 pvMat = projectorCamera.projectionMatrix * projectorCamera.worldToCameraMatrix;
+            Matrix4x4 pvMat = projectionMatrix * projectorCamera.worldToCameraMatrix;
             for (i = 0; i < n_points; i++)
             {
                 // Project the point onto the surface plane
