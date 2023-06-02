@@ -18,7 +18,6 @@ namespace UnityEngine.Rendering.Universal
         RenderTargetHandle m_CameraDepthAttachment;
         RenderTargetHandle m_DepthTexture;
 
-        RenderTargetHandle m_CameraColorAttachment;
         RenderTargetHandle m_ColorTexture;
 
         public override void Create()
@@ -26,7 +25,6 @@ namespace UnityEngine.Rendering.Universal
             m_CameraDepthAttachment.Init("_CameraDepthAttachment");
             m_DepthTexture.Init("_CameraDepthTexture");
 
-            m_CameraColorAttachment.Init("_CameraColorTexture");
             m_ColorTexture.Init("_ColorTexture");
 
             copyDepthPassMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/Universal Render Pipeline/CopyDepth"));
@@ -45,7 +43,7 @@ namespace UnityEngine.Rendering.Universal
             renderer.EnqueuePass(m_CopyDepthPass);
 
             Downsampling downsamplingMethod = UniversalRenderPipeline.asset.opaqueDownsampling;
-            m_CopyColorPass.Setup(m_CameraColorAttachment.Identifier(), m_ColorTexture, downsamplingMethod);
+            m_CopyColorPass.Setup(renderer.cameraColorTarget, m_ColorTexture, downsamplingMethod);
             renderer.EnqueuePass(m_CopyColorPass);
         }
     }
