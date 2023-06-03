@@ -190,6 +190,43 @@ inline float Fade(float3 d)
 	return saturate(1 / exp2(_f));
 }
 
+half3 XSampleMainLightCookie(float3 samplePositionWS)
+{
+    if(!IsMainLightCookieEnabled())
+        return half3(1,1,1);
+
+    float2 uv = ComputeLightCookieUVDirectional(_MainLightWorldToLight, samplePositionWS, float4(1, 1, 0, 0), URP_TEXTURE_WRAP_MODE_NONE);
+
+    if(uv.x > 1.0 || uv.x < 0.0 || uv.y > 1.0 || uv.y < 0.0)
+    	return 1.0;
+
+    half4 color = SampleMainLightCookieTexture(uv);
+
+    return color.rgb * _MainLightColor.rgb;
+}
+
+#if USE_FORWARD_PLUS
+    #define XLIGHT_LOOP_BEGIN(lightCount) { \
+    uint lightIndex; \
+    ClusterIterator _urp_internal_clusterIterator = ClusterInit(ior, i.worldPos.xyz, 0); \
+    [loop] while (ClusterNext(_urp_internal_clusterIterator, lightIndex)) { \
+        lightIndex += URP_FP_DIRECTIONAL_LIGHTS_COUNT; \
+        FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
+    #define XLIGHT_LOOP_END } }
+#elif !_USE_WEBGL1_LIGHTS
+    #define XLIGHT_LOOP_BEGIN(lightCount) \
+    for (uint lightIndex = 0u; lightIndex < lightCount; ++lightIndex) {
+
+    #define XLIGHT_LOOP_END }
+#else
+    // WebGL 1 doesn't support variable for loop conditions
+    #define XLIGHT_LOOP_BEGIN(lightCount) \
+    for (int lightIndex = 0; lightIndex < _WEBGL1_MAX_LIGHTS; ++lightIndex) { \
+        if (lightIndex >= (int)lightCount) break;
+
+    #define XLIGHT_LOOP_END }
+#endif
+
 // interpolator structs
 
 struct v2f_MQ
@@ -556,8 +593,27 @@ half4 frag_MQ(v2f_MQ i, float facing : VFACE) : SV_Target
 
 	baseColor = lerp(baseColor, reflectionColor, fresnelFac ) * shadow;
 
+	#if defined(_LIGHT_COOKIES)
+        half3 cookieColor = XSampleMainLightCookie(i.worldPos.xyz);
+        baseColor.rgb *= cookieColor;
+    #endif
+
 	baseColor += _SpecularColor * spec * lerp(fade, shadow, 0.5) / max(edge, 0.1);
 
+    #if defined(_FORWARD_PLUS)
+		XLIGHT_LOOP_BEGIN(pixelLightCount)
+	    Light light = GetAdditionalLight(lightIndex, i.worldPos.xyz);
+	    //TODO:
+	//#ifdef _LIGHT_LAYERS
+	    //if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+	//#endif
+        {
+        	spec = GGXSpecularDir(viewVector, worldNormal2, -light.direction);
+            baseColor.rgb += light.color * spec * lerp(fade, shadow, 0.5) / (max(edge, 0.1) * 31.4);
+        }
+		XLIGHT_LOOP_END
+    #endif
+		
 	half height = i.screenPos.z;
 	half3 foamMap = SAMPLE_TEXTURE2D(_FoamMask, sampler_FoamMask, i.bumpCoords.xy * _FoamMask_ST.xy + worldNormal.xz * _Foam.w * fresnelFac * height).rgb;
 #if defined (_WATERWAVE_ON) || defined (_WATERFX_ON)

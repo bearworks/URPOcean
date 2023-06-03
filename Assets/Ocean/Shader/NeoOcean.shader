@@ -52,6 +52,8 @@ Properties {
 	#pragma multi_compile _ _WATERFX_ON
 	#pragma multi_compile_fragment _ _SSREFLECTION_ON
 	#pragma multi_compile_fragment _ _SHADOWS_SOFT
+	#pragma multi_compile_fragment _ _LIGHT_COOKIES
+	#pragma multi_compile _ _FORWARD_PLUS
 	#pragma multi_compile_fog
 	#include "NeoInclude.hlsl"
 	#pragma vertex vert_MQ
